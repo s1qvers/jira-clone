@@ -43,4 +43,3 @@ export const DottedSeparator = ({
 		</div>
 	);
 };
-бьбьбьбьбь
