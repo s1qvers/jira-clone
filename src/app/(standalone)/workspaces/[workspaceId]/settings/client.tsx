@@ -11,7 +11,7 @@ export const WorkspaceIdSettingsClient = () => {
 	const { data: initialValues, isLoading } = useGetWorkspace({ workspaceId });
 
 	if (isLoading) return <PageLoader />;
-	if (!initialValues) return <PageError message="Workspace not found" />;
+	if (!initialValues) return <PageError message="Рабочее пространство не найдено" />;
 
 	return (
 		<div className="w-full lg:max-w-xl">

@@ -59,10 +59,10 @@ export const MembersList = () => {
 				<Button asChild variant="secondary" size="sm">
 					<Link href={`/workspaces/${workspaceId}`}>
 						<ArrowLeft className="size-4 mr-2" />
-						Back
+						Назад
 					</Link>
 				</Button>
-				<CardTitle className="text-xl font-bold">Members List</CardTitle>
+				<CardTitle className="text-xl font-bold">Список участников</CardTitle>
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
@@ -94,7 +94,7 @@ export const MembersList = () => {
 										}
 										disabled={updatingMember}
 									>
-										Set as Administrator
+										Установить как администратора
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										className="font-medium"
@@ -103,14 +103,14 @@ export const MembersList = () => {
 										}
 										disabled={updatingMember}
 									>
-										Set as Member
+										Установить как участник
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										className="font-medium text-amber-700"
 										onClick={() => handleDeleteMember(member.$id)}
 										disabled={deletingMember}
 									>
-										Remove {member.name}
+										Удалять {member.name}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>

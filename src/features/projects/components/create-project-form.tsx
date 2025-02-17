@@ -68,7 +68,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 	return (
 		<Card className="size-full border-none shadow-none">
 			<CardHeader className="flex p-7">
-				<CardTitle className="text-xl font-bold">Create new project</CardTitle>
+				<CardTitle className="text-xl font-bold">Создать новый проект</CardTitle>
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
@@ -82,9 +82,9 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Project name</FormLabel>
+										<FormLabel>Название проекта</FormLabel>
 										<FormControl>
-											<Input {...field} placeholder="Enter project name" />
+											<Input {...field} placeholder="Введите название проекта" />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -117,9 +117,9 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 												</Avatar>
 											)}
 											<div className="flex flex-col">
-												<p className="text-sm">Project Icon</p>
+												<p className="text-sm">Значок проекта</p>
 												<p className="text-sm text-muted-foreground">
-													JPEG, PNG, SVG, or JPEG, max 1 mb
+													JPEG, PNG, SVG, или JPEG, максимум 1 mb
 												</p>
 												<input
 													hidden
@@ -141,7 +141,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 															if (inputRef.current) inputRef.current.value = "";
 														}}
 													>
-														Remove Icon
+														Удалить значок
 													</Button>
 												) : (
 													<Button
@@ -152,7 +152,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 														disabled={isPending}
 														onClick={() => inputRef.current?.click()}
 													>
-														Upload Icon
+														Значок загрузки
 													</Button>
 												)}
 											</div>
@@ -171,10 +171,10 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 								disabled={isPending}
 								className={cn(!onCancel && "invisible")}
 							>
-								Cancel
+								Отмена
 							</Button>
 							<Button disabled={isPending} type="submit" size="lg">
-								Create project
+							Создать проект
 							</Button>
 						</div>
 					</form>

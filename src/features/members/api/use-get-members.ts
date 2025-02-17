@@ -11,7 +11,7 @@ export const useGetMembers = ({ workspaceId }: UseGetMembersProps) => {
 				query: { workspaceId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to fetch members");
+				throw new Error("Не удалось получить участников");
 			}
 			const { data } = await response.json();
 			return data;

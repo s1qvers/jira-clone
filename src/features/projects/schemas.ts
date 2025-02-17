@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createProjectSchema = z.object({
-	name: z.string().trim().min(1, { message: "Required" }),
+	name: z.string().trim().min(1, { message: "Необходимый" }),
 	image: z
 		.union([
 			z.instanceof(File),
@@ -15,7 +15,7 @@ export const updateProjectSchema = z.object({
 	name: z
 		.string()
 		.trim()
-		.min(1, { message: "Minimum 1 character required" })
+		.min(1, { message: "Требуется минимум 1 символ" })
 		.optional(),
 	image: z
 		.union([

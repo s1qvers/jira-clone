@@ -15,15 +15,15 @@ export const useCreateProject = () => {
 	const mutation = useMutation<ResponseType, Error, RequestType>({
 		mutationFn: async ({ form }) => {
 			const response = await client.api.projects.$post({ form });
-			if (!response.ok) throw new Error("Failed to create project");
+			if (!response.ok) throw new Error("Не удалось создать проект");
 			return await response.json();
 		},
 		onSuccess: () => {
-			toast.success("Project created successfully");
+			toast.success("Проект успешно создан");
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
 		},
 		onError: () => {
-			toast.error("Failed to create project");
+			toast.error("Не удалось создать проект");
 		},
 	});
 

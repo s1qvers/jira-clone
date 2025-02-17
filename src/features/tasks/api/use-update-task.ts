@@ -20,16 +20,16 @@ export const useUpdateTask = () => {
 				json,
 				param,
 			});
-			if (!response.ok) throw new Error("Failed to update task");
+			if (!response.ok) throw new Error("Не удалось обновить задачу");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Task updated successfully");
+			toast.success("Задача успешно обновлена");
 			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 			queryClient.invalidateQueries({ queryKey: ["task", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to update task");
+			toast.error("Не удалось обновить задачу");
 		},
 	});
 

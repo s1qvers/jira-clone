@@ -19,7 +19,7 @@ export const useGetProjectAnalytics = ({
 				param: { projectId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get project analytics");
+				throw new Error("Не удалось получить аналитику проекта");
 			}
 			const { data } = await response.json();
 			return data;

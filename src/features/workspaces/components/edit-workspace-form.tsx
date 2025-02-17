@@ -122,7 +122,7 @@ export const EditWorkspaceForm = ({
 						}
 					>
 						<ArrowLeft className="size-4 mr-2" />
-						Back
+						Назад
 					</Button>
 					<CardTitle className="text-xl font-bold">
 						{initialValues.name}
@@ -140,9 +140,9 @@ export const EditWorkspaceForm = ({
 									name="name"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Workspace name</FormLabel>
+											<FormLabel>Имя рабочей области</FormLabel>
 											<FormControl>
-												<Input {...field} placeholder="Enter workspace name" />
+												<Input {...field} placeholder="Введите имя рабочей области" />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -175,9 +175,9 @@ export const EditWorkspaceForm = ({
 													</Avatar>
 												)}
 												<div className="flex flex-col">
-													<p className="text-sm">Workspace Icon</p>
+													<p className="text-sm">Значок рабочей области</p>
 													<p className="text-sm text-muted-foreground">
-														JPEG, PNG, SVG, or JPEG, max 1 mb
+														JPEG, PNG, SVG, или JPEG, максимум 1 mb
 													</p>
 													<input
 														hidden
@@ -200,7 +200,7 @@ export const EditWorkspaceForm = ({
 																	inputRef.current.value = "";
 															}}
 														>
-															Remove Icon
+															Удалить значок
 														</Button>
 													) : (
 														<Button
@@ -211,7 +211,7 @@ export const EditWorkspaceForm = ({
 															disabled={isPending}
 															onClick={() => inputRef.current?.click()}
 														>
-															Upload Icon
+															Значок загрузки
 														</Button>
 													)}
 												</div>
@@ -230,10 +230,10 @@ export const EditWorkspaceForm = ({
 									disabled={isPending}
 									className={cn(!onCancel && "invisible")}
 								>
-									Cancel
+									Отменить
 								</Button>
 								<Button disabled={isPending} type="submit" size="lg">
-									Save Changes
+								Сохранить изменения
 								</Button>
 							</div>
 						</form>
@@ -243,9 +243,9 @@ export const EditWorkspaceForm = ({
 			<Card className="size-full border-none shadow-none">
 				<CardContent className="p-7">
 					<div className="flex flex-col">
-						<h3 className="font-bold">Invite Members</h3>
+						<h3 className="font-bold">Пригласить участников</h3>
 						<p className="text-sm text-muted-foreground">
-							Use the invite link to add members to your workspace
+						Используйте ссылку пригласить, чтобы добавить участников в свое рабочее пространство
 						</p>
 						<div className="mt-4">
 							<div className="flex items-center gap-x-2">
@@ -271,7 +271,7 @@ export const EditWorkspaceForm = ({
 							disabled={isPending || resetingInviteCode}
 							onClick={handleResetInviteCode}
 						>
-							Reset invite link
+							Сбросить ссылку для приглашения
 						</Button>
 					</div>
 				</CardContent>
@@ -279,10 +279,10 @@ export const EditWorkspaceForm = ({
 			<Card className="size-full border-none shadow-none">
 				<CardContent className="p-7">
 					<div className="flex flex-col">
-						<h3 className="font-bold">Danger Zone</h3>
+						<h3 className="font-bold">Опасная зона</h3>
 						<p className="text-sm text-muted-foreground">
-							Deleting a workspace is irreversible and will remove all
-							associated data
+						Удаление рабочей области является необратимым и приведет к удалению всех
+						связанных данных
 						</p>
 						<DottedSeparator className="py-7" />
 						<Button
@@ -292,7 +292,7 @@ export const EditWorkspaceForm = ({
 							disabled={isPending || deletingWorkspace}
 							onClick={handleDelete}
 						>
-							Delete workspace
+							Удалить рабочее пространство
 						</Button>
 					</div>
 				</CardContent>

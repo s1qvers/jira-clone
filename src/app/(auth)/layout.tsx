@@ -16,7 +16,7 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
 
 					<Button asChild variant="secondary">
 						<Link href={isSignIn ? "/sign-up" : "/sign-in"}>
-							{isSignIn ? "Sign Up" : "Login"}
+							{isSignIn ? "Зарегистрироваться" : "Авторизоваться"}
 						</Link>
 					</Button>
 				</nav>

@@ -12,7 +12,7 @@ export const useGetTask = ({ taskId }: useGetTaskProps) => {
 				param: { taskId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get task");
+				throw new Error("Не удалось получить задачу");
 			}
 			const { data } = await response.json();
 

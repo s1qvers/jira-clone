@@ -80,7 +80,7 @@ export const EditTaskForm = ({
 	return (
 		<Card className="size-full border-none shadow-none">
 			<CardHeader className="flex p-7">
-				<CardTitle className="text-xl font-bold">Edit a task</CardTitle>
+				<CardTitle className="text-xl font-bold">Редактировать задачу</CardTitle>
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
@@ -94,9 +94,9 @@ export const EditTaskForm = ({
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Task name</FormLabel>
+										<FormLabel>Имя задачи</FormLabel>
 										<FormControl>
-											<Input {...field} placeholder="Enter task name" />
+											<Input {...field} placeholder="Введите название задачи" />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -107,7 +107,7 @@ export const EditTaskForm = ({
 								name="dueDate"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Due Date</FormLabel>
+										<FormLabel>Две даты</FormLabel>
 										<FormControl>
 											<DatePicker {...field} />
 										</FormControl>
@@ -120,14 +120,14 @@ export const EditTaskForm = ({
 								name="assigneeId"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Assignee</FormLabel>
+										<FormLabel>Правопреемник</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={field.value}
 										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select an assignee" />
+													<SelectValue placeholder="Выберите ответственного" />
 												</SelectTrigger>
 											</FormControl>
 											<FormMessage />
@@ -154,14 +154,14 @@ export const EditTaskForm = ({
 								name="status"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Status</FormLabel>
+										<FormLabel>Статус</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={field.value}
 										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select status" />
+													<SelectValue placeholder="Выберите статус" />
 												</SelectTrigger>
 											</FormControl>
 											<FormMessage />
@@ -185,14 +185,14 @@ export const EditTaskForm = ({
 								name="projectId"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Project</FormLabel>
+										<FormLabel>Проект</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={field.value}
 										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select a project" />
+													<SelectValue placeholder="Выберите проект" />
 												</SelectTrigger>
 											</FormControl>
 											<FormMessage />
@@ -226,10 +226,10 @@ export const EditTaskForm = ({
 								disabled={isPending}
 								className={cn(!onCancel && "invisible")}
 							>
-								Cancel
+								Отмена
 							</Button>
 							<Button disabled={isPending} type="submit" size="lg">
-								Save Changes
+							Сохранить изменения
 							</Button>
 						</div>
 					</form>

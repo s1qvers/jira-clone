@@ -20,16 +20,16 @@ export const useUpdateWorkspace = () => {
 				form,
 				param,
 			});
-			if (!response.ok) throw new Error("Failed to update workspace");
+			if (!response.ok) throw new Error("Не удалось обновить рабочую область");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Workspace updated successfully");
+			toast.success("Рабочее пространство успешно обновлено");
 			queryClient.invalidateQueries({ queryKey: ["workspaces"] });
 			queryClient.invalidateQueries({ queryKey: ["workspace", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to update workspace");
+			toast.error("Не удалось обновить рабочую область");
 		},
 	});
 

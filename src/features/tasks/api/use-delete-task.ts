@@ -17,16 +17,16 @@ export const useDeleteTask = () => {
 	const mutation = useMutation<ResponseType, Error, RequestType>({
 		mutationFn: async ({ param }) => {
 			const response = await client.api.tasks[":taskId"].$delete({ param });
-			if (!response.ok) throw new Error("Failed to create task");
+			if (!response.ok) throw new Error("Не удалось создать задачу");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Task deleted successfully");
+			toast.success("Задача успешно удалена");
 			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 			queryClient.invalidateQueries({ queryKey: ["task", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to delete task");
+			toast.error("Не удалось удалить задачу");
 		},
 	});
 

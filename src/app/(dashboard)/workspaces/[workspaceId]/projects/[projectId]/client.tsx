@@ -42,7 +42,7 @@ export const ProjectIdClient = () => {
 				<Button variant="secondary" size="sm" asChild>
 					<Link href={href}>
 						<Pencil className="size-4 mr-2" />
-						Edit Project
+						Редактировать проект
 					</Link>
 				</Button>
 			</div>

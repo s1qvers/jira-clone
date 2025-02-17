@@ -11,7 +11,7 @@ export const ProjectIdSettingsClient = () => {
 	const { data: initialValues, isLoading } = useGetProject({ projectId });
 
 	if (isLoading) return <PageLoader />;
-	if (!initialValues) return <PageError message="Project not found" />;
+	if (!initialValues) return <PageError message="Проект не найден" />;
 
 	return (
 		<div className="w-full lg:max-w-xl">

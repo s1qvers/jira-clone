@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createWorkspaceSchema = z.object({
-	name: z.string().trim().min(1, { message: "Required" }),
+	name: z.string().trim().min(1, { message: "Требуемый" }),
 	image: z
 		.union([
 			z.instanceof(File),
@@ -13,7 +13,7 @@ export const updateWorkspaceSchema = z.object({
 	name: z
 		.string()
 		.trim()
-		.min(1, { message: "Must be 1 or more characters long" })
+		.min(1, { message: "Длина должна составлять 1 или более символов" })
 		.optional(),
 	image: z
 		.union([

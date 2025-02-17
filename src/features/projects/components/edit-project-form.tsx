@@ -107,7 +107,7 @@ export const EditProjectForm = ({
 						}
 					>
 						<ArrowLeft className="size-4 mr-2" />
-						Back
+						Назад
 					</Button>
 					<CardTitle className="text-xl font-bold">
 						{initialValues.name}
@@ -125,7 +125,7 @@ export const EditProjectForm = ({
 									name="name"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Project name</FormLabel>
+											<FormLabel>Название проекта</FormLabel>
 											<FormControl>
 												<Input {...field} placeholder="Enter project name" />
 											</FormControl>
@@ -160,9 +160,9 @@ export const EditProjectForm = ({
 													</Avatar>
 												)}
 												<div className="flex flex-col">
-													<p className="text-sm">Project Icon</p>
+													<p className="text-sm">Значок проекта</p>
 													<p className="text-sm text-muted-foreground">
-														JPEG, PNG, SVG, or JPEG, max 1 mb
+														JPEG, PNG, SVG, или JPEG, максимум 1 mb
 													</p>
 													<input
 														hidden
@@ -185,7 +185,7 @@ export const EditProjectForm = ({
 																	inputRef.current.value = "";
 															}}
 														>
-															Remove Icon
+															Удалить значок
 														</Button>
 													) : (
 														<Button
@@ -196,7 +196,7 @@ export const EditProjectForm = ({
 															disabled={isPending}
 															onClick={() => inputRef.current?.click()}
 														>
-															Upload Icon
+															Значок загрузки
 														</Button>
 													)}
 												</div>
@@ -215,10 +215,10 @@ export const EditProjectForm = ({
 									disabled={isPending}
 									className={cn(!onCancel && "invisible")}
 								>
-									Cancel
+									Отмена
 								</Button>
 								<Button disabled={isPending} type="submit" size="lg">
-									Save Changes
+								Сохранить изменения
 								</Button>
 							</div>
 						</form>
@@ -228,10 +228,10 @@ export const EditProjectForm = ({
 			<Card className="size-full border-none shadow-none">
 				<CardContent className="p-7">
 					<div className="flex flex-col">
-						<h3 className="font-bold">Danger Zone</h3>
+						<h3 className="font-bold">Опасная зона</h3>
 						<p className="text-sm text-muted-foreground">
-							Deleting a project is irreversible and will remove all associated
-							data
+						Удаление проекта необратимо и приведет к удалению всех связанных с ним
+						данных
 						</p>
 						<DottedSeparator className="py-7" />
 						<Button
@@ -241,7 +241,7 @@ export const EditProjectForm = ({
 							disabled={isPending || deletingProject}
 							onClick={handleDelete}
 						>
-							Delete project
+							Удалить проект
 						</Button>
 					</div>
 				</CardContent>

@@ -65,7 +65,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 		<Card className="size-full border-none shadow-none">
 			<CardHeader className="flex p-7">
 				<CardTitle className="text-xl font-bold">
-					Create new workspace
+				Создайте новое рабочее пространство
 				</CardTitle>
 			</CardHeader>
 			<div className="px-7">
@@ -80,9 +80,9 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Workspace name</FormLabel>
+										<FormLabel>Имя рабочей области</FormLabel>
 										<FormControl>
-											<Input {...field} placeholder="Enter workspace name" />
+											<Input {...field} placeholder="Введите имя рабочей области" />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -115,9 +115,9 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 												</Avatar>
 											)}
 											<div className="flex flex-col">
-												<p className="text-sm">Workspace Icon</p>
+												<p className="text-sm">Значок рабочей области</p>
 												<p className="text-sm text-muted-foreground">
-													JPEG, PNG, SVG, or JPEG, max 1 mb
+													JPEG, PNG, SVG, или JPEG, максимум 1 mb
 												</p>
 												<input
 													hidden
@@ -139,7 +139,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 															if (inputRef.current) inputRef.current.value = "";
 														}}
 													>
-														Remove Icon
+														Удалить значок
 													</Button>
 												) : (
 													<Button
@@ -150,7 +150,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 														disabled={isPending}
 														onClick={() => inputRef.current?.click()}
 													>
-														Upload Icon
+														Значок загрузки
 													</Button>
 												)}
 											</div>
@@ -169,10 +169,10 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 								disabled={isPending}
 								className={cn(!onCancel && "invisible")}
 							>
-								Cancel
+								Отменить
 							</Button>
 							<Button disabled={isPending} type="submit" size="lg">
-								Create workspace
+							Создание рабочего пространства
 							</Button>
 						</div>
 					</form>

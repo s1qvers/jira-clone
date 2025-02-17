@@ -15,7 +15,7 @@ export const WorkspaceIdJoinClient = () => {
 	});
 
 	if (isLoading) return <PageLoader />;
-	if (!initialValues) return <PageError message="Workspace not found" />;
+	if (!initialValues) return <PageError message="Рабочее пространство не найдено" />;
 
 	return (
 		<div className="w-full lg:max-w-xl">

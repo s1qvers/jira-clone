@@ -31,7 +31,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			let uploadedImage: string | undefined;
@@ -73,7 +73,7 @@ const app = new Hono()
 
 			const { workspaceId } = c.req.valid("query");
 			if (!workspaceId) {
-				return c.json({ error: "Missing workspaceId" }, 400);
+				return c.json({ error: "Отсутствует рабочее пространство" }, 400);
 			}
 
 			const member = await getMember({
@@ -83,7 +83,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			const projects = await databases.listDocuments<Project>(
@@ -113,7 +113,7 @@ const app = new Hono()
 		});
 
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 		return c.json({ data: project });
 	})
@@ -134,7 +134,7 @@ const app = new Hono()
 			userId: user.$id,
 		});
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 
 		const now = new Date();
@@ -303,7 +303,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			let uploadedImage: string | undefined;
@@ -353,7 +353,7 @@ const app = new Hono()
 			userId: user.$id,
 		});
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 		// TODO: delete  tasks
 		await databases.deleteDocument(DATABASE_ID, PROJECTS_ID, projectId);

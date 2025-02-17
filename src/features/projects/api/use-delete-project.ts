@@ -20,16 +20,16 @@ export const useDeleteProject = () => {
 				param,
 			});
 
-			if (!response.ok) throw new Error("Failed to delete project");
+			if (!response.ok) throw new Error("Не удалось удалить проект");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Project deleted successfully");
+			toast.success("Проект успешно удален");
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
 			queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to delete project");
+			toast.error("Не удалось удалить проект");
 		},
 	});
 

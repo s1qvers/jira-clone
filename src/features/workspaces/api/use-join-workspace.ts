@@ -22,16 +22,16 @@ export const useJoinWorkspace = () => {
 				param,
 				json,
 			});
-			if (!response.ok) throw new Error("Failed to join workspace");
+			if (!response.ok) throw new Error("Не удалось присоединиться к рабочей области");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Workspace joined successfully");
+			toast.success("Успешно подключено рабочее пространство");
 			queryClient.invalidateQueries({ queryKey: ["workspaces"] });
 			queryClient.invalidateQueries({ queryKey: ["workspace", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to join workspace");
+			toast.error("Не удалось присоединиться к рабочей области");
 		},
 	});
 

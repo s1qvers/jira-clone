@@ -28,7 +28,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 			const members = await databases.listDocuments<Member>(DATABASE_ID, MEMBERS_ID, [
 				Query.equal("workspaceId", workspaceId),
@@ -76,14 +76,14 @@ const app = new Hono()
 		});
 
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 
 		if (member.$id !== memberToDelete.$id && member.role !== MemberRole.ADMIN) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 		if (allMembersInWorkspace.total === 1) {
-			return c.json({ error: "Cannot delete the only member" }, 400);
+			return c.json({ error: "Невозможно удалить единственного участника" }, 400);
 		}
 
 		await databases.deleteDocument(DATABASE_ID, MEMBERS_ID, memberId);
@@ -118,14 +118,14 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			if (member.role !== MemberRole.ADMIN) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 			if (allMembersInWorkspace.total === 1) {
-				return c.json({ error: "Cannot downgrade the only member" }, 400);
+				return c.json({ error: "Невозможно понизить статус единственного участника" }, 400);
 			}
 
 			await databases.updateDocument(DATABASE_ID, MEMBERS_ID, memberId, {

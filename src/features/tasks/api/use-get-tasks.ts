@@ -40,7 +40,7 @@ export const useGetTasks = ({
 				},
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get tasks");
+				throw new Error("Не удалось получить задачи");
 			}
 			const { data } = await response.json();
 

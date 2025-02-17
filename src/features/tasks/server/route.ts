@@ -30,7 +30,7 @@ const app = new Hono()
 		});
 
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 		await databases.deleteDocument(DATABASE_ID, TASKS_ID, taskId);
 		return c.json({ data: { $id: taskId } });
@@ -63,7 +63,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			const query = [
@@ -163,7 +163,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 			const highestPositionTask = await databases.listDocuments(
 				DATABASE_ID,
@@ -221,7 +221,7 @@ const app = new Hono()
 			});
 
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 			const task = await databases.updateDocument<Task>(
 				DATABASE_ID,
@@ -256,7 +256,7 @@ const app = new Hono()
 			userId: currentUser.$id,
 		});
 		if (!currentMember) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Несанкционированный" }, 401);
 		}
 		const project = await databases.getDocument<Project>(
 			DATABASE_ID,
@@ -321,12 +321,12 @@ const app = new Hono()
 
 			if (workspaceIds.size !== 1) {
 				return c.json({
-					error: "All tasks must belong to the same workspace",
+					error: "Все задачи должны принадлежать одному и тому же рабочему пространству.",
 				});
 			}
 			const workspaceId = workspaceIds.values().next().value;
 			if (!workspaceId) {
-				return c.json({error:"Workspace Id is required"},400)
+				return c.json({error:"Требуется идентификатор рабочего пространства"},400)
 			}
 
 			const member = await getMember({
@@ -335,7 +335,7 @@ const app = new Hono()
 				userId: user.$id,
 			});
 			if (!member) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Несанкционированный" }, 401);
 			}
 
 			const updatedTasks = await Promise.all(

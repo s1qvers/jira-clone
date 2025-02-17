@@ -14,7 +14,7 @@ export const useGetWorkspaceInfo = ({ workspaceId }: useGetWorkspaceInfo) => {
 				}
 			);
 			if (!response.ok) {
-				throw new Error("Failed to get workspace info");
+				throw new Error("Не удалось получить информацию о рабочей области");
 			}
 			const { data } = await response.json();
 			return data;

@@ -21,7 +21,7 @@ export const useGetWorkspaceAnalytics = ({
 				param: { workspaceId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get workspace analytics");
+				throw new Error("Не удалось получить аналитику рабочей области");
 			}
 			const { data } = await response.json();
 			return data;

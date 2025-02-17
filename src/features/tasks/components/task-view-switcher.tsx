@@ -70,22 +70,22 @@ export const TaskViewSwitcher = ({
 				<div className="flex  lg:flex-row gap-y-2 items-center justify-start w-full">
 					<TabsList className="w-full lg:w-auto">
 						<TabsTrigger className="h-8 w-full lg:w-auto" value="table">
-							Table
+						Стол
 						</TabsTrigger>
 					</TabsList>
 					<TabsList className="w-full lg:w-auto">
 						<TabsTrigger className="h-8 w-full lg:w-auto" value="kanban">
-							Kanban
+						Вывеска
 						</TabsTrigger>
 					</TabsList>
 					<TabsList className="w-full lg:w-auto">
 						<TabsTrigger className="h-8 w-full lg:w-auto" value="calendar">
-							Calendar
+						Календарь
 						</TabsTrigger>
 					</TabsList>
 					<Button onClick={open} size="sm" className="w-full lg:w-auto">
 						<Plus className="size-4 mr-2" />
-						New
+						Новый
 					</Button>
 				</div>
 				<DottedSeparator className="my-4" />

@@ -7,7 +7,7 @@ export const useGetWorkspaces = () => {
 		queryFn: async () => {
 			const response = await client.api.workspaces.$get();
 			if (!response.ok) {
-				throw new Error("Failed to get workspaces");
+				throw new Error("Не удалось получить рабочие области");
 			}
 			const { data } = await response.json();
 			return data;

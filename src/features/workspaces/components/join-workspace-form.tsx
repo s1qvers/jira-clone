@@ -46,10 +46,10 @@ export const JoinWorkspaceForm = ({
 	return (
 		<Card className="size-full border-none shadow-none">
 			<CardHeader className="p-7">
-				<CardTitle className="text-xl font-bold">Join workspace</CardTitle>
+				<CardTitle className="text-xl font-bold">Присоединиться к рабочему пространству</CardTitle>
 				<CardDescription>
-					You&apos;ve been invited to join <strong>{initialValues.name}</strong>{" "}
-					workspace
+				Вы&apos;Меня пригласили присоединиться <strong>{initialValues.name}</strong>{" "}
+				рабочее место
 				</CardDescription>
 			</CardHeader>
 			<div className="px-7">
@@ -65,7 +65,7 @@ export const JoinWorkspaceForm = ({
 						size="lg"
 						asChild
 					>
-						<Link href="/">Cancel</Link>
+						<Link href="/">Отменить</Link>
 					</Button>
 					<Button
 						className="w-full lg:w-fit"
@@ -74,7 +74,7 @@ export const JoinWorkspaceForm = ({
 						type="button"
 						size="lg"
 					>
-						Join workspace
+						Присоединиться к рабочему пространству
 					</Button>
 				</div>
 			</CardContent>

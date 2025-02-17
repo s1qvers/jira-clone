@@ -21,16 +21,16 @@ export const useUpdateProject = () => {
 				param,
 			});
 
-			if (!response.ok) throw new Error("Failed to update project");
+			if (!response.ok) throw new Error("Не удалось обновить проект");
 			return await response.json();
 		},
 		onSuccess: ({ data }) => {
-			toast.success("Project updated successfully");
+			toast.success("Проект успешно обновлен");
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
 			queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
 		},
 		onError: () => {
-			toast.error("Failed to update project");
+			toast.error("Не удалось обновить проект");
 		},
 	});
 

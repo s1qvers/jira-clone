@@ -65,11 +65,11 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 				<SelectTrigger className="w-full lg:w-auto h-8">
 					<div className="flex items-center pr-2">
 						<ListChecksIcon className="size-4 mr-2" />
-						<SelectValue placeholder="All status" />
+						<SelectValue placeholder="Весь статус" />
 					</div>
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value="all">All status</SelectItem>
+					<SelectItem value="all">Все статусы</SelectItem>
 					<SelectSeparator />
 					{Object.entries(TaskStatus).map(([key, value]) => (
 						<SelectItem key={value} value={value}>
@@ -88,11 +88,11 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 				<SelectTrigger className="w-full lg:w-auto h-8">
 					<div className="flex items-center pr-2">
 						<UserCog2 className="size-4 mr-2" />
-						<SelectValue placeholder="All assignee" />
+						<SelectValue placeholder="Все правопреемники" />
 					</div>
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value="all">All assignee</SelectItem>
+					<SelectItem value="all">Все правопреемники</SelectItem>
 					<SelectSeparator />
 					{memberOptions?.map((member) => (
 						<SelectItem key={member.value} value={member.value}>
@@ -109,11 +109,11 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 					<SelectTrigger className="w-full lg:w-auto h-8">
 						<div className="flex items-center pr-2">
 							<FolderIcon className="size-4 mr-2" />
-							<SelectValue placeholder="All projects" />
+							<SelectValue placeholder="Все проекты" />
 						</div>
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">All projects</SelectItem>
+						<SelectItem value="all">Все проекты</SelectItem>
 						<SelectSeparator />
 						{projectOptions?.map((project) => (
 							<SelectItem key={project.value} value={project.value}>
@@ -124,7 +124,7 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 				</Select>
 			)}
 			<DatePicker
-				placeholder="Due date"
+				placeholder="Срок погашения"
 				className="w-full lg:w-auto h-8"
 				value={dueDate ? new Date(dueDate) : undefined}
 				onChange={(date) =>

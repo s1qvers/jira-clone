@@ -61,7 +61,7 @@ export const TasksBreadcrumbs = ({ project, task }: TasksBreadcrumbsProps) => {
 				size="sm"
 			>
 				<Trash className="size-4 lg:mr-2" />
-				<span className="hidden lg:block">Delete Task</span>
+				<span className="hidden lg:block">Удалить задачу</span>
 			</Button>
 		</div>
 	);

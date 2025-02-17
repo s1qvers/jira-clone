@@ -54,7 +54,7 @@ const app = new Hono()
 		});
 
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Неавторизованный" }, 401);
 		}
 
 		const workspace = await databases.getDocument<Workspace>(
@@ -146,7 +146,7 @@ const app = new Hono()
 			});
 
 			if (!member || member.role !== MemberRole.ADMIN) {
-				return c.json({ error: "Unauthorized" }, 401);
+				return c.json({ error: "Неавторизованный" }, 401);
 			}
 
 			let uploadedImage: string | undefined;
@@ -189,7 +189,7 @@ const app = new Hono()
 			userId: user.$id,
 		});
 		if (!member || member.role !== MemberRole.ADMIN) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Неавторизованный" }, 401);
 		}
 		// TODO: delete members, projects, tasks
 		await databases.deleteDocument(DATABASE_ID, WORKSPACE_ID, workspaceId);
@@ -205,7 +205,7 @@ const app = new Hono()
 			userId: user.$id,
 		});
 		if (!member || member.role !== MemberRole.ADMIN) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Неавторизованный" }, 401);
 		}
 		const workspace = await databases.updateDocument(
 			DATABASE_ID,
@@ -234,7 +234,7 @@ const app = new Hono()
 				userId: user.$id,
 			});
 			if (member) {
-				return c.json({ error: "Already a membber" }, 400);
+				return c.json({ error: "Уже являетесь участником" }, 400);
 			}
 
 			const workspace = await databases.getDocument<Workspace>(
@@ -244,7 +244,7 @@ const app = new Hono()
 			);
 
 			if (workspace.inviteCode !== code) {
-				return c.json({ error: "Invalid invite code" }, 400);
+				return c.json({ error: "Неверный пригласительный код" }, 400);
 			}
 
 			await databases.createDocument(DATABASE_ID, MEMBERS_ID, ID.unique(), {
@@ -266,7 +266,7 @@ const app = new Hono()
 			userId: user.$id,
 		});
 		if (!member) {
-			return c.json({ error: "Unauthorized" }, 401);
+			return c.json({ error: "Неавторизованный" }, 401);
 		}
 
 		const now = new Date();

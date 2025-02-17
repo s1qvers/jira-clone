@@ -19,15 +19,15 @@ export const useBulkUpdateTasks = () => {
 			const response = await client.api.tasks["bulk-update"].$post({
 				json,
 			});
-			if (!response.ok) throw new Error("Failed to bulk-update task");
+			if (!response.ok) throw new Error("Не удалось выполнить задачу массового обновления.");
 			return await response.json();
 		},
 		onSuccess: () => {
-			toast.success("Tasks updated successfully");
+			toast.success("Задачи успешно обновлены");
 			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 		},
 		onError: () => {
-			toast.error("Failed to update tasks");
+			toast.error("Не удалось обновить задачи");
 		},
 	});
 

@@ -51,21 +51,21 @@ export const TaskActions = ({ children, id, projectId }: TaskActionsProps) => {
 						className="font-medium p-[10px]"
 					>
 						<ExternalLinkIcon className="size-5 mr-2 sroke-2" />
-						Task Details
+						Подробности задачи
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						onClick={onOpenProject}
 						className="font-medium p-[10px]"
 					>
 						<ExternalLinkIcon className="size-5 mr-2 sroke-2" />
-						Open Project
+						Открытый проект
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						onClick={() => open(id)}
 						className="font-medium p-[10px]"
 					>
 						<PencilIcon className="size-5 mr-2 sroke-2" />
-						Edit Task
+						Редактировать задачу
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						onClick={onDelete}
@@ -73,7 +73,7 @@ export const TaskActions = ({ children, id, projectId }: TaskActionsProps) => {
 						className="font-medium p-[10px] text-amber-700 focus:text-amber-700"
 					>
 						<TrashIcon className="size-5 mr-2 sroke-2" />
-						Delete Task
+						Удалить задачу
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

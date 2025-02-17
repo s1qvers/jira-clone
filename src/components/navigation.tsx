@@ -12,25 +12,25 @@ import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { usePathname } from "next/navigation";
 const router = [
 	{
-		label: "Home",
+		label: "Домой",
 		href: "",
 		icon: GoHome,
 		aciveIcon: GoHomeFill,
 	},
 	{
-		label: "My Tasks",
+		label: "Мои задачи",
 		href: "/tasks",
 		icon: GoCheckCircle,
 		aciveIcon: GoCheckCircleFill,
 	},
 	{
-		label: "Settings",
+		label: "Настройки",
 		href: "/settings",
 		icon: Settings,
 		aciveIcon: Settings,
 	},
 	{
-		label: "Members",
+		label: "Члены",
 		href: "/members",
 		icon: UsersIcon,
 		aciveIcon: UsersIcon,

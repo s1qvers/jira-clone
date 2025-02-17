@@ -12,7 +12,7 @@ export const useGetWorkspace = ({ workspaceId }: useGetWorkspaceProps) => {
 				param: { workspaceId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get workspace");
+				throw new Error("Не удалось получить рабочее пространство");
 			}
 			const { data } = await response.json();
 			return data;

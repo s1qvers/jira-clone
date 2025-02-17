@@ -12,7 +12,7 @@ export const useGetProject = ({ projectId }: useGetProjectProps) => {
 				param: { projectId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get project");
+				throw new Error("Не удалось получить проект");
 			}
 			const { data } = await response.json();
 			return data;

@@ -12,7 +12,7 @@ export const useGetProjects = ({ workspaceId }: useGetProjectsProps) => {
 				query: { workspaceId },
 			});
 			if (!response.ok) {
-				throw new Error("Failed to get projects");
+				throw new Error("Не удалось получить проекты");
 			}
 			const { data } = await response.json();
 			return data;

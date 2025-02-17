@@ -36,7 +36,7 @@ export const SignInCard = () => {
 	return (
 		<Card className="size-full md:w-[487px] border-none shadow-none">
 			<CardHeader className="flexx items-center justify-center text-center p-7">
-				<CardTitle className="text-2xl">Welcome Back!</CardTitle>
+				<CardTitle className="text-2xl">С возвращением!</CardTitle>
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
@@ -53,7 +53,7 @@ export const SignInCard = () => {
 										<Input
 											{...field}
 											type="email"
-											placeholder="Enter email address"
+											placeholder="Введите адрес электронной почты"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -69,7 +69,7 @@ export const SignInCard = () => {
 										<Input
 											{...field}
 											type="password"
-											placeholder="Enter password"
+											placeholder="Введите пароль"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -77,7 +77,7 @@ export const SignInCard = () => {
 							)}
 						/>
 						<Button className="w-full" size="lg" disabled={isPending}>
-							Login
+						Авторизоваться
 						</Button>
 					</form>
 				</Form>
@@ -94,7 +94,7 @@ export const SignInCard = () => {
 					className="w-full"
 				>
 					<FaGithub className="size-5 mr-2" />
-					Login with Github
+					Войдите в систему с помощью Github
 				</Button>
 			</CardContent>
 			<div className="px-7">
@@ -102,9 +102,9 @@ export const SignInCard = () => {
 			</div>
 			<CardContent className="p-7 flex items-center justify-center">
 				<p>
-					Don&apos;t have an account?
+					Нет аккаунта?
 					<Link href="/sign-up">
-						<span className="text-blue-700">&nbsp;Sign Up</span>
+						<span className="text-blue-700">&nbsp;Зарегистрироваться</span>
 					</Link>
 				</p>
 			</CardContent>

@@ -42,15 +42,15 @@ export const SignUpCard = () => {
 	return (
 		<Card className="size-full md:w-[487px] border-none shadow-none">
 			<CardHeader className="flexx items-center justify-center text-center p-7">
-				<CardTitle className="text-2xl">Sign Up</CardTitle>
+				<CardTitle className="text-2xl">Зарегистрироваться</CardTitle>
 				<CardDescription>
-					By signing up, you agree to our{" "}
+				Регистрируясь, вы соглашаетесь с нашими{" "}
 					<Link href="/privacy">
-						<span className="text-blue-700">Privacy Policy</span>
+						<span className="text-blue-700">Политика конфиденциальности</span>
 					</Link>{" "}
-					and{" "}
+					и{" "}
 					<Link href="/terms">
-						<span className="text-blue-700">terms</span>
+						<span className="text-blue-700">условия</span>
 					</Link>
 				</CardDescription>
 			</CardHeader>
@@ -69,7 +69,7 @@ export const SignUpCard = () => {
 										<Input
 											{...field}
 											type="text"
-											placeholder="Enter your name"
+											placeholder="Введите свое имя"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -85,7 +85,7 @@ export const SignUpCard = () => {
 										<Input
 											{...field}
 											type="email"
-											placeholder="Enter email address"
+											placeholder="Введите адрес электронной почты"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -101,7 +101,7 @@ export const SignUpCard = () => {
 										<Input
 											{...field}
 											type="password"
-											placeholder="Enter your password"
+											placeholder="Введите ваш пароль"
 										/>
 									</FormControl>
 									<FormMessage />
@@ -109,7 +109,7 @@ export const SignUpCard = () => {
 							)}
 						/>
 						<Button className="w-full" size="lg" disabled={isPending}>
-							Register
+						Зарегистрироваться
 						</Button>
 					</form>
 				</Form>
@@ -135,7 +135,7 @@ export const SignUpCard = () => {
 					className="w-full"
 				>
 					<FaGithub className="size-5 mr-2" />
-					Login with Github
+					Войти через Github
 				</Button>
 			</CardContent>
 			<div className="px-7">
@@ -143,9 +143,9 @@ export const SignUpCard = () => {
 			</div>
 			<CardContent className="p-7 flex items-center justify-center">
 				<p>
-					already have an account?
+				Уже есть аккаунт?
 					<Link href="/sign-in">
-						<span className="text-blue-700">&nbsp;Sign In</span>
+						<span className="text-blue-700">&nbsp;Войти</span>
 					</Link>
 				</p>
 			</CardContent>

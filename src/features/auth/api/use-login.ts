@@ -14,16 +14,16 @@ export const useLogin = () => {
 	const mutation = useMutation<ResponseType, Error, RequestType>({
 		mutationFn: async ({ json }) => {
 			const response = await client.api.auth.login.$post({ json });
-			if (!response.ok) throw new Error("Failed to login");
+			if (!response.ok) throw new Error("Не удалось войти");
 			return await response.json();
 		},
 		onSuccess: () => {
 			router.refresh();
-			toast.success("Logged in successfully");
+			toast.success("Авторизация выполнена успешно");
 			queryClient.invalidateQueries({ queryKey: ["current"] });
 		},
 		onError: () => {
-			toast.error("Failed to login");
+			toast.error("Не удалось войти");
 		},
 	});
 

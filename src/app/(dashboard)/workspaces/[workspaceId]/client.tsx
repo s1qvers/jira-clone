@@ -44,7 +44,7 @@ export const WorkspaceIdClient = () => {
 	if (isLoading) return <PageLoader />;
 
 	if (!analytics || !tasks || !projects || !members)
-		return <PageError message="Failed to load workspace data" />;
+		return <PageError message="Не удалось загрузить данные рабочей области" />;
 	return (
 		<div className="h-full flex flex-col space-y-4">
 			<Analytics data={analytics} />
@@ -69,7 +69,7 @@ export const TaskList = ({ data, total }: TaskListProps) => {
 		<div className="flex flex-col gap-y-4 col-span-1">
 			<div className="bg-muted rounded-lg p-4">
 				<div className="flex items-center justify-between">
-					<p className="text-lg font-semibold">Tasks ({total})</p>
+					<p className="text-lg font-semibold">Задачи ({total})</p>
 					<Button variant="muted" size="icon" onClick={createTask}>
 						<PlusIcon className="size-4 text-neutral-400" />
 					</Button>
@@ -98,11 +98,11 @@ export const TaskList = ({ data, total }: TaskListProps) => {
 						</li>
 					))}
 					<li className="text-sm text-muted-foreground text-center hidden first-of-type:block">
-						No tasks found
+					Не найдено ни одного задания
 					</li>
 				</ul>
 				<Button variant="muted" className="mt-4 w-full" asChild>
-					<Link href={`/workspaces/${workspaceId}/tasks`}>Show All</Link>
+					<Link href={`/workspaces/${workspaceId}/tasks`}>Показать все</Link>
 				</Button>
 			</div>
 		</div>
@@ -121,7 +121,7 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
 		<div className="flex flex-col gap-y-4 col-span-1">
 			<div className="bg-white border rounded-lg p-4">
 				<div className="flex items-center justify-between">
-					<p className="text-lg font-semibold">Projects ({total})</p>
+					<p className="text-lg font-semibold">Проекты ({total})</p>
 					<Button variant="secondary" size="icon" onClick={createProject}>
 						<PlusIcon className="size-4 text-neutral-400" />
 					</Button>
@@ -148,7 +148,7 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
 						</li>
 					))}
 					<li className="text-sm text-muted-foreground text-center hidden first-of-type:block">
-						No projects found
+					Не найдено ни одного проекта
 					</li>
 				</ul>
 			</div>
@@ -167,7 +167,7 @@ export const MembersList = ({ data, total }: MembersListProps) => {
 		<div className="flex flex-col gap-y-4 col-span-1">
 			<div className="bg-white border rounded-lg p-4">
 				<div className="flex items-center justify-between">
-					<p className="text-lg font-semibold">Members ({total})</p>
+					<p className="text-lg font-semibold">Участники ({total})</p>
 					<Button asChild variant="secondary" size="icon">
 						<Link href={`/workspaces/${workspaceId}/members`}>
 							<SettingsIcon className="size-4 text-neutral-400" />
@@ -194,7 +194,7 @@ export const MembersList = ({ data, total }: MembersListProps) => {
 						</li>
 					))}
 					<li className="text-sm text-muted-foreground text-center hidden first-of-type:block">
-						No members found
+					Не найдено ни одного участника
 					</li>
 				</ul>
 			</div>
