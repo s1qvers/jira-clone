@@ -59,7 +59,7 @@ export const useConfirm = (
 							className="w-full lg:w-auto"
 							onClick={handleConfirm}
 						>
-							Подтверждать
+							Подтвердить
 						</Button>
 					</div>
 				</CardContent>

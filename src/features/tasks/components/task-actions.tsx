@@ -23,8 +23,8 @@ export const TaskActions = ({ children, id, projectId }: TaskActionsProps) => {
 	const workspaceId = useWorkspaceId();
 	const { open } = useEditTaskModal();
 	const [ConfirmDialog, confirm] = useConfirm(
-		"Delete Task",
-		"Are you sure you want to delete this task?",
+		"Удалить задачу",
+		"Вы уверены, что хотите удалить это задание?",
 		"destructive"
 	);
 	const { mutate, isPending } = useDeleteTask();

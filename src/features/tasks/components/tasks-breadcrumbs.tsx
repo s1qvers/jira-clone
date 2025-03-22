@@ -19,8 +19,8 @@ export const TasksBreadcrumbs = ({ project, task }: TasksBreadcrumbsProps) => {
 	const router = useRouter();
 	const { mutate, isPending } = useDeleteTask();
 	const [ConfirmDialog, confirm] = useConfirm(
-		"Delete Task",
-		"Are you sure you want to delete this task?",
+		"Удалить задачу",
+		"Вы уверены, что хотите удалить это задание?",
 		"destructive"
 	);
 

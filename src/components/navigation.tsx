@@ -30,7 +30,7 @@ const router = [
 		aciveIcon: Settings,
 	},
 	{
-		label: "Члены",
+		label: "Участники",
 		href: "/members",
 		icon: UsersIcon,
 		aciveIcon: UsersIcon,

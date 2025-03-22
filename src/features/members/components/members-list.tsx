@@ -26,8 +26,8 @@ import { useConfirm } from "@/hooks/use-confirm";
 export const MembersList = () => {
 	const workspaceId = useWorkspaceId();
 	const [ConfirmDialog, confirm] = useConfirm(
-		"Remove Member",
-		"This member will be removed from the workspace",
+		"Удалить участника",
+		"Этот участник будет удален из рабочей области",
 		"destructive"
 	);
 
@@ -110,7 +110,7 @@ export const MembersList = () => {
 										onClick={() => handleDeleteMember(member.$id)}
 										disabled={deletingMember}
 									>
-										Удалять {member.name}
+										Удалить {member.name}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
