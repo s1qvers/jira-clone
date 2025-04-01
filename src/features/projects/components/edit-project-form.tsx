@@ -43,8 +43,8 @@ export const EditProjectForm = ({
 		useDeleteProject();
 
 	const [DeleteWorkspaceDialog, confirmDelete] = useConfirm(
-		"Delete project",
-		"Are you sure you want to delete this project?",
+		"Удалить проект",
+		"Вы уверены, что хотите удалить этот проект?",
 		"destructive"
 	);
 
