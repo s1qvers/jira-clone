@@ -44,16 +44,16 @@ export const EditWorkspaceForm = ({
 		useDeleteWorkspace();
 
 	const [DeleteWorkspaceDialog, confirmDelete] = useConfirm(
-		"Delte workspace",
-		"Are you sure you want to delete this workspace?",
+		"Расширенное рабочее пространство",
+		"Вы уверены, что хотите удалить это рабочее пространство?",
 		"destructive"
 	);
 	const { mutate: resetInviteCode, isPending: resetingInviteCode } =
 		useResetInviteCode();
 
 	const [ResetDialog, confirmReset] = useConfirm(
-		"Reset invite link",
-		"This will invalidate the current invite link",
+		"Сбросить ссылку для приглашения",
+		"Это приведет к аннулированию текущей ссылки на приглашение",
 		"destructive"
 	);
 
