@@ -26,8 +26,9 @@ export const useUpdateProject = () => {
 		},
 		onSuccess: ({ data }) => {
 			toast.success("Проект успешно обновлен");
+			const projectId = data.id || data.$id;
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
-			queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
+			queryClient.invalidateQueries({ queryKey: ["project", projectId] });
 		},
 		onError: () => {
 			toast.error("Не удалось обновить проект");

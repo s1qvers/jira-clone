@@ -48,7 +48,19 @@ export const WorkspaceIdClient = () => {
 		return <PageError message="Не удалось загрузить данные рабочей области" />;
 	return (
 		<div className="h-full flex flex-col space-y-4">
-			<Analytics data={analytics} />
+			<Analytics data={{
+				...analytics,
+				tasksByStatus: {
+					BACKLOG: 0,
+					TODO: 0,
+					IN_PROGRESS: 0,
+					IN_REVIEW: 0,
+					DONE: 0,
+					...Object.fromEntries(analytics?.tasksByStatus.map(item => [item.status, item.count]) || [])
+				},
+				completionRate: 0,
+				averageCompletionTime: 0
+			}} />
 			<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 				<TaskList data={tasks.documents as Task[]} total={tasks.total} />
 				<ProjectList data={projects.documents as Project[]} total={projects.total} />
@@ -138,8 +150,8 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
 				<DottedSeparator className="my-4" />
 				<ul className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 					{data.map((project) => (
-						<li key={project.$id}>
-							<Link href={`/workspaces/${workspaceId}/projects/${project.$id}`}>
+						<li key={project.$id || project.id}>
+							<Link href={`/workspaces/${workspaceId}/projects/${project.$id || project.id}`}>
 								<Card className="shadow-none rounded-lg hover:opacity-75 transition">
 									<CardContent className="p-4 flex items-center gap-x-2.5">
 										<ProjectAvatar

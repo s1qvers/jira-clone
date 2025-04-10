@@ -12,9 +12,11 @@ import { PageLoader } from "@/components/page-loader";
 import { PageError } from "@/components/page-error";
 import { useGetProjectAnalytics } from "@/features/projects/api/use-get-project-analytics";
 import { Analytics } from "@/components/analytics";
+import { useRouter } from "next/navigation";
 
 export const ProjectIdClient = () => {
 	const projectId = useProjectId();
+	const router = useRouter();
 	const { data: project, isLoading: projectsLoading } = useGetProject({
 		projectId,
 	});
@@ -26,7 +28,18 @@ export const ProjectIdClient = () => {
 	if (isLoading) return <PageLoader />;
 	if (!project) return <PageError message="Project not found" />;
 
-	const href = `/workspaces/${project.workspaceId}/projects/${project.$id}/settings`;
+	// URL для настроек проекта должен вести к странице в слое standalone
+	const workspaceId = project.workspaceId;
+	
+	// Создаем прямую ссылку на страницу настроек проекта
+	const goToProjectSettings = () => {
+		// Формируем URL с использованием window.location
+		const url = `${window.location.origin}/workspaces/${workspaceId}/projects/${projectId}/settings`;
+		console.log("Переход на страницу настроек проекта:", url);
+		
+		// Открываем окно напрямую, минуя роутер Next.js
+		window.location.href = url;
+	};
 
 	return (
 		<div className="flex flex-col gap-y-4">
@@ -39,12 +52,13 @@ export const ProjectIdClient = () => {
 					/>
 					<p className="text-lg font-semibold">{project.name}</p>
 				</div>
-				<Button variant="secondary" size="sm" asChild>
-					<Link href={href}>
-						<Pencil className="size-4 mr-2" />
-						Редактировать проект
-					</Link>
-				</Button>
+				<button 
+					onClick={goToProjectSettings}
+					className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-3"
+				>
+					<Pencil className="size-4 mr-2" />
+					Редактировать проект
+				</button>
 			</div>
 			{analytics ? <Analytics data={analytics} /> : null}
 			<TaskViewSwitcher hideProjectFilter />

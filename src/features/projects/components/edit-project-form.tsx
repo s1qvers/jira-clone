@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,10 +63,29 @@ export const EditProjectForm = ({
 			...values,
 			image: values.image instanceof File ? values.image : "",
 		};
-		mutate({
-			form: finalValues,
-			param: { projectId: initialValues.$id },
-		});
+		
+		// Используем id вместо $id для передачи ID проекта
+		const projectId = initialValues.id || initialValues.$id;
+		
+		console.log("Обновление проекта с ID:", projectId);
+		
+		mutate(
+			{
+				form: finalValues,
+				param: { projectId },
+			},
+			{
+				onSuccess: () => {
+					// Можно добавить дополнительные действия при успешном обновлении
+					console.log("Проект успешно обновлен");
+				},
+				onError: (error) => {
+					// Показываем более информативное сообщение об ошибке
+					console.error("Ошибка при обновлении проекта:", error);
+					toast.error(error.message || "Не удалось обновить проект");
+				}
+			}
+		);
 	};
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -77,15 +97,33 @@ export const EditProjectForm = ({
 	const handleDelete = async () => {
 		const ok = await confirmDelete();
 		if (!ok) return;
+		
+		const workspaceId = initialValues.workspaceId;
+		const projectId = initialValues.id || initialValues.$id;
+		
+		console.log(`Удаление проекта: ${projectId}, рабочее пространство: ${workspaceId}`);
+		
+		// Показываем сообщение о начале процесса удаления
+		toast.loading("Удаление проекта...");
+		
 		deleteProject(
 			{
-				param: { projectId: initialValues.$id },
+				param: { projectId },
 			},
 			{
 				onSuccess: () => {
-					// Hard refresh to clear cache
-					window.location.href = `/workspaces/${initialValues.workspaceId}`;
+					toast.dismiss(); // Удаляем loading toast
+					toast.success("Проект успешно удален");
+					console.log("Проект успешно удален, переход на /workspaces/" + workspaceId);
+					
+					// Перенаправляем на страницу рабочего пространства
+					window.location.href = `/workspaces/${workspaceId}`;
 				},
+				onError: (error) => {
+					toast.dismiss(); // Удаляем loading toast
+					console.error("Ошибка при удалении проекта:", error);
+					toast.error(error.message || "Не удалось удалить проект");
+				}
 			}
 		);
 	};
@@ -100,10 +138,18 @@ export const EditProjectForm = ({
 						onClick={
 							onCancel
 								? onCancel
-								: () =>
-										router.push(
-											`/workspaces/${initialValues.workspaceId}/projects/${initialValues.$id}`
-										)
+								: () => {
+									const workspaceId = initialValues.workspaceId;
+									// Используем id вместо $id для URL
+									const projectId = initialValues.id || initialValues.$id;
+									
+									// Строим абсолютный URL для перехода на страницу проекта с учетом слоев роутинга
+									const projectUrl = `/workspaces/${workspaceId}/projects/${projectId}`;
+									console.log("Переход на страницу проекта:", projectUrl);
+									
+									// Используем жесткий переход через window.location для обеспечения корректного роутинга
+									window.location.href = projectUrl;
+								}
 						}
 					>
 						<ArrowLeft className="size-4 mr-2" />
@@ -236,10 +282,9 @@ export const EditProjectForm = ({
 						<DottedSeparator className="py-7" />
 						<Button
 							className="mt-6 w-fit ml-auto"
-							size="sm"
-							variant="destructive"
-							disabled={isPending || deletingProject}
+							disabled={deletingProject}
 							onClick={handleDelete}
+							variant="destructive"
 						>
 							Удалить проект
 						</Button>
