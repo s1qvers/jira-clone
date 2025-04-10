@@ -55,7 +55,7 @@ export async function getWorkspaceById(workspaceId: string) {
   return workspace;
 }
 
-export async function updateWorkspace(workspaceId: string, data: { name?: string; imageUrl?: string; inviteCode?: string }) {
+export async function updateWorkspace(workspaceId: string, data: { name?: string; imageUrl?: string | null; inviteCode?: string }) {
   const workspace = await prisma.workspace.update({
     where: {
       id: workspaceId
