@@ -21,8 +21,11 @@ export const updateProjectSchema = z.object({
 	image: z
 		.union([
 			z.instanceof(File),
-			z.string().transform((value) => (value === "" ? undefined : value)),
-			z.null().transform(() => undefined),
+			z.string().transform((value) => {
+				if (value === "null") return null;
+				return value === "" ? undefined : value;
+			}),
+			z.null(),
 		])
 		.optional(),
 });

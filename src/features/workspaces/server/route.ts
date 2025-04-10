@@ -95,6 +95,15 @@ const app = new Hono()
 			const { workspaceId } = c.req.param();
 			const { name, image } = c.req.valid("form");
 			
+			console.log("PATCH /workspaces/:workspaceId - Полученные данные:", {
+				workspaceId,
+				name,
+				image: image instanceof File ? "File Object" : image,
+				imageType: typeof image,
+				isNull: image === null,
+				isNullString: image === 'null'
+			});
+			
 			// Проверяем права пользователя
 			const member = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
 
@@ -132,6 +141,18 @@ const app = new Hono()
 			} else if (image === null && existingWorkspace.imageUrl) {
 				// Если image = null, значит пользователь удалил изображение
 				try {
+					const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
+					if (publicId) {
+						await deleteImage(publicId);
+					}
+					uploadedImage = null;
+				} catch (error) {
+					console.error('Ошибка при удалении изображения:', error);
+				}
+			} else if (image === 'null' && existingWorkspace.imageUrl) {
+				// Обработка строкового значения 'null' от клиента
+				try {
+					console.log('Обрабатываем строковое значение "null", удаляем существующее изображение');
 					const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
 					if (publicId) {
 						await deleteImage(publicId);

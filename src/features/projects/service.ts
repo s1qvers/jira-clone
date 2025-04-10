@@ -32,7 +32,7 @@ export async function getProjectById(projectId: string) {
   return project;
 }
 
-export async function updateProject(projectId: string, data: { name?: string; imageUrl?: string }) {
+export async function updateProject(projectId: string, data: { name?: string; imageUrl?: string | null }) {
   const project = await prisma.project.update({
     where: {
       id: projectId

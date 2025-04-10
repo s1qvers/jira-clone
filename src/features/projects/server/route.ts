@@ -109,6 +109,15 @@ const app = new Hono()
 			const user = c.get("user");
 			const { name, image } = c.req.valid("form");
 
+			console.log("PATCH /projects/:projectId - Полученные данные:", {
+				projectId,
+				name,
+				image: image instanceof File ? "File Object" : image,
+				imageType: typeof image,
+				isNull: image === null,
+				isNullString: image === 'null'
+			});
+
 			const project = await getProjectById(projectId);
 			
 			if (!project) {
@@ -126,7 +135,7 @@ const app = new Hono()
 				return c.json({ error: "Требуются права администратора" }, 403);
 			}
 
-			let imageUrl: string | undefined;
+			let imageUrl: string | undefined | null = undefined;
 			
 			// Загружаем новое изображение, если оно есть
 			if (image instanceof File) {
@@ -146,13 +155,36 @@ const app = new Hono()
 					// В случае ошибки сохраняем текущее изображение или используем заглушку
 					imageUrl = project.imageUrl || "/placeholder.png";
 				}
+			} else if (image === null && project.imageUrl) {
+				// Если image = null, значит пользователь удалил изображение
+				try {
+					const publicId = getPublicIdFromUrl(project.imageUrl);
+					if (publicId) {
+						await deleteImage(publicId);
+					}
+					imageUrl = null;
+				} catch (error) {
+					console.error('Ошибка при удалении изображения:', error);
+				}
+			} else if (image === 'null' && project.imageUrl) {
+				// Обработка строкового значения 'null' от клиента
+				try {
+					console.log('Обрабатываем строковое значение "null", удаляем существующее изображение');
+					const publicId = getPublicIdFromUrl(project.imageUrl);
+					if (publicId) {
+						await deleteImage(publicId);
+					}
+					imageUrl = null;
+				} catch (error) {
+					console.error('Ошибка при удалении изображения:', error);
+				}
 			} else if (typeof image === 'string') {
 				imageUrl = image;
 			}
 
 			const updatedProject = await updateProject(projectId, {
-					name,
-				imageUrl
+				name,
+				imageUrl: imageUrl as string | null
 			});
 
 			return c.json({ data: updatedProject });
