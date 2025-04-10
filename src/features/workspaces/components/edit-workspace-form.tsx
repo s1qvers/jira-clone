@@ -63,17 +63,29 @@ export const EditWorkspaceForm = ({
 		resolver: zodResolver(updateWorkspaceSchema),
 		defaultValues: {
 			...initialValues,
-			image: initialValues.imageUrl ?? "",
+			image: initialValues.imageUrl && initialValues.imageUrl.includes('placeholder.com') 
+				? '/placeholder.png' 
+				: initialValues.imageUrl ?? "",
 		},
 	});
 	const onSumbit = (values: UpdateWorkspaceSchema) => {
 		const finalValues = {
 			...values,
-			image: values.image instanceof File ? values.image : "",
+			image: values.image instanceof File ? values.image : values.image === null ? null : "",
 		};
+		const workspaceId = initialValues.id || initialValues.$id;
+		console.log("Отправка данных на сервер:", {
+			workspaceId,
+			data: finalValues
+		});
 		mutate({
 			form: finalValues,
-			param: { workspaceId: initialValues.$id },
+			param: { workspaceId },
+		}, {
+			onSuccess: () => {
+				// Не перенаправляем, просто показываем уведомление
+				toast.success("Рабочее пространство успешно обновлено");
+			}
 		});
 	};
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,13 +98,16 @@ export const EditWorkspaceForm = ({
 	const handleDelete = async () => {
 		const ok = await confirmDelete();
 		if (!ok) return;
+		const workspaceId = initialValues.id || initialValues.$id;
+		console.log("Удаление рабочего пространства:", workspaceId);
 		deleteWorkspace(
 			{
-				param: { workspaceId: initialValues.$id },
+				param: { workspaceId },
 			},
 			{
 				onSuccess: () => {
-					// Hard refresh to clear cache
+					toast.success("Рабочее пространство успешно удалено");
+					// Принудительное перенаправление на главную страницу
 					window.location.href = "/";
 				},
 			}
@@ -101,11 +116,13 @@ export const EditWorkspaceForm = ({
 	const handleResetInviteCode = async () => {
 		const ok = await confirmReset();
 		if (!ok) return;
+		const workspaceId = initialValues.id || initialValues.$id;
+		console.log("Сброс инвайт-кода для рабочего пространства:", workspaceId);
 		resetInviteCode({
-			param: { workspaceId: initialValues.$id },
+			param: { workspaceId },
 		});
 	};
-	const absoluteInviteLink = `${window.location.origin}/workspaces/${initialValues.$id}/join/${initialValues.inviteCode}`;
+	const absoluteInviteLink = `${window.location.origin}/workspaces/${initialValues.id || initialValues.$id}/join/${initialValues.inviteCode}`;
 
 	return (
 		<div className="flex flex-col gap-y-4">
@@ -118,7 +135,10 @@ export const EditWorkspaceForm = ({
 						onClick={
 							onCancel
 								? onCancel
-								: () => router.push(`/workspaces/${initialValues.$id}`)
+								: () => {
+									const workspaceId = initialValues.id || initialValues.$id;
+									router.push(`/workspaces/${workspaceId}`);
+								}
 						}
 					>
 						<ArrowLeft className="size-4 mr-2" />
@@ -161,7 +181,9 @@ export const EditWorkspaceForm = ({
 															src={
 																field.value instanceof File
 																	? URL.createObjectURL(field.value)
-																	: field.value
+																	: typeof field.value === 'string' && field.value.includes('placeholder.com')
+																		? '/placeholder.png'
+																		: field.value
 															}
 															alt="Workspace Icon"
 															className="object-cover"
@@ -198,6 +220,7 @@ export const EditWorkspaceForm = ({
 																field.onChange(null);
 																if (inputRef.current)
 																	inputRef.current.value = "";
+																console.log("Значок удален", form.getValues());
 															}}
 														>
 															Удалить значок

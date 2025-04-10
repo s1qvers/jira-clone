@@ -109,7 +109,7 @@ const app = new Hono()
 				return c.json({ error: "Рабочее пространство не найдено" }, 404);
 			}
 
-			let uploadedImage: string | undefined;
+			let uploadedImage: string | undefined | null = undefined;
 			
 			// Загружаем новое изображение, если оно есть
 			if (image instanceof File) {
@@ -128,6 +128,17 @@ const app = new Hono()
 					console.error('Ошибка при загрузке изображения:', error);
 					// В случае ошибки сохраняем текущее изображение
 					uploadedImage = existingWorkspace.imageUrl || undefined;
+				}
+			} else if (image === null && existingWorkspace.imageUrl) {
+				// Если image = null, значит пользователь удалил изображение
+				try {
+					const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
+					if (publicId) {
+						await deleteImage(publicId);
+					}
+					uploadedImage = null;
+				} catch (error) {
+					console.error('Ошибка при удалении изображения:', error);
 				}
 			} else if (typeof image === 'string') {
 				uploadedImage = image;

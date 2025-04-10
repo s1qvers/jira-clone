@@ -20,7 +20,7 @@ export const updateWorkspaceSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
-			z.null().transform(() => undefined),
+			z.null(),
 		])
 		.optional(),
 });
