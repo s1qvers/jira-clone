@@ -33,8 +33,28 @@ export const useUpdateWorkspace = () => {
 			// Используем обычный fetch вместо Hono-клиента
 			const formData = new FormData();
 			if (form.name) formData.append('name', form.name);
-			if (form.image instanceof File) formData.append('image', form.image);
-			else if (form.image === null) formData.append('image', 'null');
+			
+			// Явно добавляем поле image даже если оно null, чтобы сервер знал, что его нужно удалить
+			if (form.image instanceof File) {
+				formData.append('image', form.image);
+				console.log("Отправляем файл изображения");
+			}
+			else if (form.image === null) {
+				// Отправляем специальное строковое значение 'null' для обозначения удаления
+				formData.append('image', 'null');
+				console.log("Отправляем 'null' строку для удаления изображения");
+			}
+			else if (typeof form.image === 'string') {
+				// Для обычных строковых значений URL
+				formData.append('image', form.image);
+				console.log("Отправляем строковый URL изображения");
+			}
+			
+			// Вывод всех полей FormData для отладки
+			console.log("Отправляемые данные:");
+			for (const [key, value] of formData.entries()) {
+				console.log(`${key}: ${value}`);
+			}
 			
 			const response = await fetch(`/api/workspaces/${param.workspaceId}`, {
 				method: 'PATCH',
