@@ -1,10 +1,11 @@
 "use client";
+import React from "react";
 import { useRef } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CopyIcon, ImageIcon } from "lucide-react";
+import { ArrowLeft, CopyIcon, ImageIcon, Copy } from "lucide-react";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -116,13 +117,29 @@ export const EditWorkspaceForm = ({
 	const handleResetInviteCode = async () => {
 		const ok = await confirmReset();
 		if (!ok) return;
+		
 		const workspaceId = initialValues.id || initialValues.$id;
 		console.log("Сброс инвайт-кода для рабочего пространства:", workspaceId);
-		resetInviteCode({
-			param: { workspaceId },
-		});
+		resetInviteCode(
+			{
+				param: { workspaceId },
+			},
+			{
+				onSuccess: ({ data }) => {
+					toast.success("Пригласительный код успешно сброшен");
+					// Обновляем значение инвайт-кода в форме
+					form.setValue("inviteCode", data.inviteCode);
+					// Обновляем локальное состояние, чтобы отобразить новую ссылку
+					setAbsoluteInviteLink(`${window.location.origin}/workspaces/${workspaceId}/join/${data.inviteCode}`);
+				},
+			}
+		);
 	};
-	const absoluteInviteLink = `${window.location.origin}/workspaces/${initialValues.id || initialValues.$id}/join/${initialValues.inviteCode}`;
+	
+	// Используем состояние для хранения ссылки приглашения
+	const [absoluteInviteLink, setAbsoluteInviteLink] = React.useState(
+		`${window.location.origin}/workspaces/${initialValues.id || initialValues.$id}/join/${initialValues.inviteCode}`
+	);
 
 	return (
 		<div className="flex flex-col gap-y-4">
@@ -272,15 +289,19 @@ export const EditWorkspaceForm = ({
 						</p>
 						<div className="mt-4">
 							<div className="flex items-center gap-x-2">
-								<Input value={absoluteInviteLink} readOnly />
+								<Input 
+									value={absoluteInviteLink} 
+									readOnly
+									className="flex-1"
+								/>
 								<Button
 									onClick={() => {
-										navigator.clipboard
-											.writeText(absoluteInviteLink)
-											.then(() => toast.success("Copied to clipboard"));
+										void navigator.clipboard.writeText(absoluteInviteLink);
+										toast.success("Ссылка скопирована");
 									}}
 									variant="secondary"
 									className="size-12"
+									disabled={isPending || resetingInviteCode}
 								>
 									<CopyIcon className="size-5" />
 								</Button>
