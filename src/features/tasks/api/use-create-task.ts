@@ -1,26 +1,43 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
 
 import { client } from "@/lib/rpc";
 import { toast } from "sonner";
+import { Task } from "../types";
 
-type ResponseType = InferResponseType<(typeof client.api.tasks)["$post"], 200>;
-type RequestType = InferRequestType<(typeof client.api.tasks)["$post"]>;
+export interface TaskCreateResponse {
+	data: Task;
+}
 
-export const useCreateTask = () => {
+type RequestType = InferRequestType<
+	(typeof client.api.tasks)["projects"][":projectId"]["$post"]
+>;
+
+interface UseCreateTaskParams {
+	projectId: string;
+}
+
+export const useCreateTask = ({ projectId }: UseCreateTaskParams) => {
 	const queryClient = useQueryClient();
-	const mutation = useMutation<ResponseType, Error, RequestType>({
+	const mutation = useMutation<TaskCreateResponse, Error, RequestType>({
 		mutationFn: async ({ json }) => {
-			const response = await client.api.tasks.$post({ json });
+			if (!projectId) {
+				throw new Error("ID проекта не указан");
+			}
+			
+			const response = await client.api.tasks.projects[":projectId"].$post({
+				param: { projectId },
+				json,
+			});
 			if (!response.ok) throw new Error("Не удалось создать задачу");
-			return await response.json();
+			return await response.json() as TaskCreateResponse;
 		},
 		onSuccess: () => {
 			toast.success("Задача успешно создана");
 			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 		},
-		onError: () => {
-			toast.error("Не удалось создать задачу");
+		onError: (error) => {
+			toast.error(error.message || "Не удалось создать задачу");
 		},
 	});
 

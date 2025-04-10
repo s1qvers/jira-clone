@@ -6,6 +6,7 @@ export const createWorkspaceSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
+			z.null().transform(() => undefined),
 		])
 		.optional(),
 });
@@ -19,10 +20,11 @@ export const updateWorkspaceSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
+			z.null().transform(() => undefined),
 		])
 		.optional(),
 });
-export const inviteCodeSchema = z.object({ code: z.string() });
+export const inviteCodeSchema = z.object({ inviteCode: z.string() });
 
 export type CreateWorkspaceSchema = z.infer<typeof createWorkspaceSchema>;
 export type UpdateWorkspaceSchema = z.infer<typeof updateWorkspaceSchema>;

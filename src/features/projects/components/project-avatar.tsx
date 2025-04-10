@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface ProjectAvatarProps {
-	image?: string;
+	image?: string | null;
 	name: string;
 	className?: string;
 	fallbackClassName?: string;
@@ -11,26 +11,15 @@ interface ProjectAvatarProps {
 
 export const ProjectAvatar = ({
 	name,
-	image,
 	className,
+	image,
 	fallbackClassName,
 }: ProjectAvatarProps) => {
-	if (image) {
-		return (
-			<div
-				className={cn("size-5 relative rounded-md overflow-hidden", className)}
-			>
-				<Image src={image} alt={name} fill className="object-cover" />
-			</div>
-		);
-	}
+	// Всегда используем fallback для надежности
 	return (
-		<Avatar className={cn("size-5 rounded-md", className)}>
+		<Avatar className={cn("size-10 rounded-md", className)}>
 			<AvatarFallback
-				className={cn(
-					"text-white bg-blue-600 font-semibold text-sm uppercase rounded-md",
-					fallbackClassName
-				)}
+				className={cn("text-white bg-blue-600 rounded-md", fallbackClassName)}
 			>
 				{name[0]}
 			</AvatarFallback>

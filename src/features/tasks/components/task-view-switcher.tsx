@@ -46,6 +46,9 @@ export const TaskViewSwitcher = ({
 		status,
 	});
 
+	// Добавляем лог для отслеживания загруженных задач
+	console.log("Загружено задач:", tasks?.documents?.length || 0, tasks?.documents);
+
 	const onKanbanChange = useCallback(
 		(
 			tasks: {
@@ -95,21 +98,28 @@ export const TaskViewSwitcher = ({
 					<div className="w-full border rounded-lg h-[200px] flex flex-col items-center justify-center">
 						<Loader className="size-5 animate-spin text-muted-foreground" />
 					</div>
-				) : (
+				) : tasks?.documents && tasks.documents.length > 0 ? (
 					<>
 						<TabsContent value="table" className="mt-0">
-							<DataTable columns={columns} data={tasks?.documents ?? []} />
+							<DataTable columns={columns} data={tasks.documents} />
 						</TabsContent>
 						<TabsContent value="kanban" className="mt-0">
 							<DataKanban
 								onChange={onKanbanChange}
-								data={tasks?.documents ?? []}
+								data={tasks.documents}
 							/>
 						</TabsContent>
 						<TabsContent value="calendar" className="mt-0 h-full pb-4">
-							<DataCalander data={tasks?.documents ?? []} />
+							<DataCalander data={tasks.documents} />
 						</TabsContent>
 					</>
+				) : (
+					<div className="w-full border rounded-lg h-[200px] flex flex-col items-center justify-center">
+						<p className="text-muted-foreground">Задачи не найдены</p>
+						<Button onClick={open} variant="link" className="mt-2">
+							Создать новую задачу
+						</Button>
+					</div>
 				)}
 			</div>
 		</Tabs>

@@ -3,41 +3,65 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import { ArrowLeft, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { DottedSeparator } from "@/components/dotted-separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
-import { MemberRole } from "@/features/members/types";
-import { useGetMembers } from "@/features/members/api/use-get-members";
-import { useDeleteMember } from "@/features/members/api/use-delete-member";
+import { useGetMembers, MemberDocument } from "@/features/members/api/use-get-members";
 import { useUpdateMember } from "@/features/members/api/use-update-member";
+import { useDeleteMember } from "@/features/members/api/use-delete-member";
+import { MemberRole } from "@/features/members/types";
 import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { MemberAvatar } from "@/features/members/components/members-avatar";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useAuth } from "@/hooks/use-auth";
 
 export const MembersList = () => {
 	const workspaceId = useWorkspaceId();
+	const router = useRouter();
+	const { user } = useAuth();
 	const [ConfirmDialog, confirm] = useConfirm(
 		"Удалить участника",
-		"Этот участник будет удален из рабочей области",
+		"Вы уверены, что хотите удалить этого участника из рабочего пространства?",
 		"destructive"
 	);
 
 	const { data } = useGetMembers({ workspaceId });
 
-	const { mutate: deleteMember, isPending: deletingMember } = useDeleteMember();
-	const { mutate: updateMember, isPending: updatingMember } = useUpdateMember();
+	const { mutate: updateMember } = useUpdateMember();
+	const { mutate: deleteMember } = useDeleteMember();
+
+	// Определяем, является ли текущий пользователь администратором
+	const isAdmin = data?.documents.some(
+		(member: MemberDocument) => member.role === MemberRole.ADMIN && member.userId === user?.id
+	);
+
+	const members = data?.documents || [];
 
 	const handleUpdateMember = (memberId: string, role: MemberRole) => {
-		updateMember({ param: { memberId }, json: { role } });
+		updateMember({
+			param: { memberId },
+			json: { role },
+		}, {
+			onSuccess: () => {
+				router.refresh();
+			},
+			onError: (error) => {
+				if (error.message.includes("единственного администратора")) {
+					toast.error("Невозможно понизить статус единственного администратора");
+				} else {
+					toast.error("Не удалось обновить роль участника");
+				}
+			}
+		});
 	};
 
 	const handleDeleteMember = async (memberId: string) => {
@@ -47,80 +71,87 @@ export const MembersList = () => {
 			{ param: { memberId } },
 			{
 				onSuccess: () => {
-					window.location.reload();
+					router.refresh();
 				},
 			}
 		);
 	};
+	
 	return (
-		<Card className="size-full border-none shadow-none">
-			<ConfirmDialog />
-			<CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
-				<Button asChild variant="secondary" size="sm">
-					<Link href={`/workspaces/${workspaceId}`}>
-						<ArrowLeft className="size-4 mr-2" />
-						Назад
-					</Link>
-				</Button>
-				<CardTitle className="text-xl font-bold">Список участников</CardTitle>
-			</CardHeader>
-			<div className="px-7">
-				<DottedSeparator />
-			</div>
-			<CardContent className="p-7">
-				{data?.documents.map((member, idx) => (
-					<Fragment key={member.$id}>
-						<div className="flex items-center gap-2">
-							<MemberAvatar
-								className="size-10"
-								fallbackClassName="text-lg"
-								name={member.name}
-							/>
-							<div className="flex flex-col">
-								<p className="text-sm font-medium">{member.name}</p>
-								<p className="text-xs font-medium">{member.email}</p>
-							</div>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button className="ml-auto" variant="secondary" size="icon">
-										<MoreVertical className="size-4 text-muted-foreground" />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent side="bottom" align="end">
-									<DropdownMenuItem
-										className="font-medium"
-										onClick={() =>
-											handleUpdateMember(member.$id, MemberRole.ADMIN)
-										}
-										disabled={updatingMember}
-									>
-										Установить как администратора
-									</DropdownMenuItem>
-									<DropdownMenuItem
-										className="font-medium"
-										onClick={() =>
-											handleUpdateMember(member.$id, MemberRole.MEMBER)
-										}
-										disabled={updatingMember}
-									>
-										Установить как участник
-									</DropdownMenuItem>
-									<DropdownMenuItem
-										className="font-medium text-amber-700"
-										onClick={() => handleDeleteMember(member.$id)}
-										disabled={deletingMember}
-									>
-										Удалить {member.name}
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</div>
-						{idx < data.documents.length - 1 && (
-							<Separator className="my-2.5 bg-neutral-400/40" />
-						)}
-					</Fragment>
-				))}
-			</CardContent>
-		</Card>
+		<>
+			<Card className="size-full border-none shadow-none">
+				<ConfirmDialog />
+				<CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
+					<Button asChild variant="secondary" size="sm">
+						<Link href={`/workspaces/${workspaceId}`}>
+							<ArrowLeft className="size-4 mr-2" />
+							Назад
+						</Link>
+					</Button>
+					<CardTitle className="text-xl font-bold">Список участников</CardTitle>
+				</CardHeader>
+				<CardContent className="p-7">
+					<div className="space-y-4">
+						{members.map((member) => (
+							<Fragment key={member.$id}>
+								<div className="flex items-center justify-between py-2">
+									<div className="flex items-center gap-x-3">
+										<MemberAvatar
+											className="size-10"
+											fallbackClassName="text-lg"
+											name={member.name}
+										/>
+										<div className="space-y-1">
+											<p className="text-sm font-medium">{member.name}</p>
+											<p className="text-xs text-muted-foreground">{member.email}</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-x-4">
+										<span className="text-sm font-medium">
+											{member.role === MemberRole.ADMIN
+												? "Администратор"
+												: "Участник"}
+										</span>
+										{isAdmin && (
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<Button size="icon" variant="ghost">
+														<MoreVertical className="size-4" />
+													</Button>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent align="end">
+													<DropdownMenuItem
+														onClick={() =>
+															handleUpdateMember(member.$id, MemberRole.MEMBER)
+														}
+														disabled={member.role === MemberRole.MEMBER}
+													>
+														Сделать участником
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() =>
+															handleUpdateMember(member.$id, MemberRole.ADMIN)
+														}
+														disabled={member.role === MemberRole.ADMIN}
+													>
+														Сделать администратором
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() => handleDeleteMember(member.$id)}
+														className="text-destructive"
+													>
+														Удалить
+													</DropdownMenuItem>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										)}
+									</div>
+								</div>
+							</Fragment>
+						))}
+					</div>
+				</CardContent>
+			</Card>
+		</>
 	);
 };

@@ -1,6 +1,9 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { toast } from "sonner";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,22 +56,75 @@ export const CreateTaskForm = ({
 	projectOptions,
 }: CreateTaskFormProps) => {
 	const workspaceId = useWorkspaceId();
-	const { mutate, isPending } = useCreateTask();
+	const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+	const { mutate, isPending } = useCreateTask({ projectId: selectedProjectId });
+	
 	const form = useForm<CreateTaskSchema>({
 		resolver: zodResolver(createTaskSchema.omit({ workspaceId: true })),
 		defaultValues: {
-			workspaceId,
+			workspaceId: workspaceId || "",
+			name: "",
+			status: undefined,
+			projectId: "",
+			assigneeId: "",
+			dueDate: undefined,
 		},
 	});
+	
 	const onSubmit = (values: CreateTaskSchema) => {
+		if (!values.projectId) {
+			// Выводим ошибку, если проект не выбран
+			form.setError("projectId", {
+				type: "manual",
+				message: "Выберите проект для задачи"
+			});
+			return;
+		}
+		
+		if (!workspaceId) {
+			toast.error("ID рабочего пространства не указан");
+			return;
+		}
+		
+		// Проверяем, что assigneeId установлен, иначе используем текущего пользователя
+		// или первого доступного участника из списка
+		if (!values.assigneeId && memberOptions.length > 0) {
+			console.log("Исполнитель не выбран, используем первого доступного участника");
+			values.assigneeId = memberOptions[0].id;
+		}
+		
+		if (!values.status) {
+			// Устанавливаем BACKLOG как статус по умолчанию
+			values.status = TaskStatus.BACKLOG;
+		}
+		
+		// Для отладки - выводим значения в консоль
+		console.log("Отправляемые данные:", {
+			projectId: values.projectId,
+			assigneeId: values.assigneeId,
+			workspaceId,
+			name: values.name,
+			status: values.status,
+			dueDate: values.dueDate
+		});
+		
+		// Устанавливаем projectId для API вызова
+		setSelectedProjectId(values.projectId);
+		
 		mutate(
-			{ json: { ...values, workspaceId } },
+			{
+				param: { projectId: values.projectId },
+				json: { ...values, workspaceId }
+			},
 			{
 				onSuccess: () => {
 					form.reset();
 					onCancel?.();
-					// TODO: redirect to new task
 				},
+				onError: (error) => {
+					console.error("Ошибка при создании задачи:", error);
+					toast.error(error.message || "Не удалось создать задачу");
+				}
 			}
 		);
 	};
@@ -163,7 +219,7 @@ export const CreateTaskForm = ({
 											<FormMessage />
 											<SelectContent>
 												{Object.entries(TaskStatus).map(([key, value]) => (
-													<SelectItem key={value} value={value.toUpperCase()}>
+													<SelectItem key={value} value={value}>
 														{key
 															.replace("_", " ")
 															.toLowerCase()
@@ -183,7 +239,10 @@ export const CreateTaskForm = ({
 									<FormItem>
 										<FormLabel>Проект</FormLabel>
 										<Select
-											onValueChange={field.onChange}
+											onValueChange={(value) => {
+												field.onChange(value);
+												setSelectedProjectId(value);
+											}}
 											defaultValue={field.value}
 										>
 											<FormControl>
