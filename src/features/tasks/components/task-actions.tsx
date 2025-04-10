@@ -31,7 +31,15 @@ export const TaskActions = ({ children, id, projectId }: TaskActionsProps) => {
 	const onDelete = async () => {
 		const ok = await confirm();
 		if (!ok) return;
-		mutate({ param: { taskId: id } });
+		mutate(
+			{ param: { taskId: id } },
+			{
+				onSuccess: () => {
+					// Явно перезагружаем страницу для гарантированного обновления списка задач
+					router.refresh();
+				}
+			}
+		);
 	};
 
 	const onOpenTask = () => {

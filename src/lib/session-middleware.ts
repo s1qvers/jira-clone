@@ -1,53 +1,55 @@
 import "server-only";
-
-import {
-	Account,
-	Client,
-	Databases,
-	Storage,
-	Models,
-	type Account as AccountType,
-	type Databases as DatabasesType,
-	type Storage as StorageType,
-	type Users as UsersType,
-} from "node-appwrite";
-import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
+import { getCookie } from "hono/cookie";
+import { prisma } from "./prisma";
 import { AUTH_COOKIE } from "@/features/auth/constants";
 
 type AdditionalContext = {
 	Variables: {
-		account: AccountType;
-		databases: DatabasesType;
-		storage: StorageType;
-		users: UsersType;
-		user: Models.User<Models.Preferences>;
+		user: {
+			id: string;
+			email: string;
+			name: string;
+		};
 	};
 };
 
 export const sessionMiddleware = createMiddleware<AdditionalContext>(
 	async (c, next) => {
-		const client = new Client()
-			.setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-			.setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+		const sessionCookie = getCookie(c, AUTH_COOKIE);
 
-		const session = getCookie(c, AUTH_COOKIE);
-		if (!session) {
-			return c.json({ error: "Несанкционированный доступ" }, 401);
+		if (!sessionCookie) {
+			return c.json({ message: "Неавторизован" }, 401);
 		}
-		client.setSession(session);
 
-		const account = new Account(client);
-		const databases = new Databases(client);
-		const storage = new Storage(client);
-
-		const user = await account.get();
-
-		c.set("user", user);
-		c.set("account", account);
-		c.set("storage", storage);
-		c.set("databases", databases);
-
-		await next();
+		try {
+			// Декодируем сессию из куки и получаем userId
+			const sessionData = JSON.parse(Buffer.from(sessionCookie, 'base64').toString());
+			
+			if (!sessionData.userId) {
+				return c.json({ message: "Неавторизован" }, 401);
+			}
+			
+			// Находим пользователя
+			const user = await prisma.user.findUnique({
+				where: { id: sessionData.userId },
+				select: {
+					id: true,
+					email: true,
+					name: true,
+				},
+			});
+			
+			if (!user) {
+				return c.json({ message: "Неавторизован" }, 401);
+			}
+			
+			// Устанавливаем пользователя в контекст
+			c.set("user", user);
+			
+			await next();
+		} catch (error) {
+			return c.json({ message: "Ошибка авторизации" }, 401);
+		}
 	}
 );

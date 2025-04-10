@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { InferResponseType } from "hono";
 
 interface UseGetWorkspaceAnalyticsProps {
-	workspaceId: string;
+	workspaceId: string | null;
 }
 export type WorkspaceAnalyticsResponseType = InferResponseType<
 	(typeof client.api.workspaces)[":workspaceId"]["analytics"]["$get"],
@@ -15,6 +15,10 @@ export const useGetWorkspaceAnalytics = ({
 	const query = useQuery({
 		queryKey: ["workspace-analytics", workspaceId],
 		queryFn: async () => {
+			if (!workspaceId) {
+				return undefined;
+			}
+			
 			const response = await client.api.workspaces[
 				":workspaceId"
 			].analytics.$get({
@@ -26,6 +30,7 @@ export const useGetWorkspaceAnalytics = ({
 			const { data } = await response.json();
 			return data;
 		},
+		enabled: !!workspaceId,
 	});
 
 	return query;

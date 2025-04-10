@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Task } from "@/features/tasks/types";
 import { formatDistanceToNow } from "date-fns";
 import { CalendarIcon, PlusIcon, SettingsIcon } from "lucide-react";
+import { useState } from "react";
 
 import { useGetTasks } from "@/features/tasks/api/use-get-tasks";
-import { useGetMembers } from "@/features/members/api/use-get-members";
+import { useGetMembers, type MembersResponse, type MemberDocument } from "@/features/members/api/use-get-members";
 import { useGetProjects } from "@/features/projects/api/use-get-projects";
 import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { useCreateTaskModal } from "@/features/tasks/hooks/use-create-task-modal";
@@ -21,22 +22,22 @@ import { PageError } from "@/components/page-error";
 import { Analytics } from "@/components/analytics";
 import { Button } from "@/components/ui/button";
 import { ProjectAvatar } from "@/features/projects/components/project-avatar";
-import { Member } from "@/features/members/types";
 import { MemberAvatar } from "@/features/members/components/members-avatar";
+import { DashboardTopbar } from "@/components/dashboard-topbar";
 
 export const WorkspaceIdClient = () => {
 	const workspaceId = useWorkspaceId();
-	const { data: analytics, isLoading: analyticsLoading } =
-		useGetWorkspaceAnalytics({ workspaceId });
-	const { data: tasks, isLoading: tasksLoading } = useGetTasks({
-		workspaceId,
-	});
-	const { data: projects, isLoading: projectsLoading } = useGetProjects({
-		workspaceId,
-	});
-	const { data: members, isLoading: membersLoading } = useGetMembers({
-		workspaceId,
-	});
+	
+	// Если workspaceId отсутствует, показываем сообщение об ошибке
+	if (!workspaceId) {
+		return <PageError message="ID рабочего пространства не указан" />;
+	}
+	
+	const [sidebarOpen, setSidebarOpen] = useState(true);
+	const { data: projects, isLoading: projectsLoading } = useGetProjects({ workspaceId });
+	const { data: members, isLoading: membersLoading } = useGetMembers({ workspaceId });
+	const { data: analytics, isLoading: analyticsLoading } = useGetWorkspaceAnalytics({ workspaceId });
+	const { data: tasks, isLoading: tasksLoading } = useGetTasks({ workspaceId });
 
 	const isLoading =
 		analyticsLoading || tasksLoading || projectsLoading || membersLoading;
@@ -49,10 +50,18 @@ export const WorkspaceIdClient = () => {
 		<div className="h-full flex flex-col space-y-4">
 			<Analytics data={analytics} />
 			<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-				<TaskList data={tasks.documents} total={tasks.total} />
-				<ProjectList data={projects.documents} total={projects.total} />
-				<MembersList data={members.documents} total={projects.total} />
+				<TaskList data={tasks.documents as Task[]} total={tasks.total} />
+				<ProjectList data={projects.documents as Project[]} total={projects.total} />
+				<MembersList data={members.documents as MemberDocument[]} total={members.total} />
 			</div>
+			<DashboardTopbar
+				members={members}
+				tasks={tasks}
+				projects={projects}
+				sidebarOpen={sidebarOpen}
+				setSidebarOpen={setSidebarOpen}
+				workspaceId={workspaceId}
+			/>
 		</div>
 	);
 };
@@ -157,7 +166,7 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
 };
 
 interface MembersListProps {
-	data: Member[];
+	data: MemberDocument[];
 	total: number;
 }
 export const MembersList = ({ data, total }: MembersListProps) => {

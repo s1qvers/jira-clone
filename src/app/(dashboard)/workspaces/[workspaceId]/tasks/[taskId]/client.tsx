@@ -9,6 +9,7 @@ import { DottedSeparator } from "@/components/dotted-separator";
 import { TaskOverview } from "@/features/tasks/components/task-overview";
 import { TaskDescription } from "@/features/tasks/components/task-description";
 import { TasksBreadcrumbs } from "@/features/tasks/components/tasks-breadcrumbs";
+import { Task } from "@/features/tasks/types";
 
 export const TaskIdClient = () => {
 	const taskId = UseTaskId();
@@ -18,13 +19,17 @@ export const TaskIdClient = () => {
 
 	if (!data) return <PageError />;
 
+	// Безопасное приведение data к типу Task и получение project
+	const task = data as any as Task;
+	const project = task.project;
+
 	return (
 		<div className="flex flex-col">
-			<TasksBreadcrumbs task={data} project={data.project} />
+			<TasksBreadcrumbs task={task} project={project} />
 			<DottedSeparator className="my-6" />
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-				<TaskOverview task={data} />
-				<TaskDescription task={data} />
+				<TaskOverview task={task} />
+				<TaskDescription task={task} />
 			</div>
 		</div>
 	);

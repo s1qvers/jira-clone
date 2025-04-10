@@ -6,6 +6,7 @@ export const createProjectSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
+			z.null().transform(() => undefined),
 		])
 		.optional(),
 
@@ -21,6 +22,7 @@ export const updateProjectSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
+			z.null().transform(() => undefined),
 		])
 		.optional(),
 });

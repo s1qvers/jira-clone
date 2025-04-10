@@ -14,13 +14,16 @@ interface TaskDescriptionProps {
 
 export const TaskDescription = ({ task }: TaskDescriptionProps) => {
 	const [isEditing, setIsEditing] = useState(false);
-	const [value, setValue] = useState(task.description);
+	const [value, setValue] = useState(task.description || '');
 	const { mutate, isPending } = useUpdateTask();
 
 	const handleSave = () => {
+		const taskId = task.$id || task.id;
+		if (!taskId) return;
+		
 		mutate({
 			json: { description: value },
-			param: { taskId: task.$id },
+			param: { taskId },
 		},{
 			onSuccess: () => setIsEditing(false),
 		});
@@ -63,7 +66,7 @@ export const TaskDescription = ({ task }: TaskDescriptionProps) => {
 				</div>
 			) : (
 				<div>
-					{task.description || (
+					{task.description ? task.description : (
 						<span className="text-muted-foreground">Описание не установлено</span>
 					)}
 				</div>

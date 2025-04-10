@@ -20,15 +20,18 @@ export const useUpdateMember = () => {
 				param,
 				json,
 			});
-			if (!response.ok) throw new Error("Не удалось обновить участника");
+			if (!response.ok) {
+				const responseData = await response.json() as { error?: string };
+				throw new Error(responseData.error || "Не удалось обновить участника");
+			}
 			return await response.json();
 		},
 		onSuccess: () => {
 			toast.success("Участник успешно обновлен");
 			queryClient.invalidateQueries({ queryKey: ["members"] });
 		},
-		onError: () => {
-			toast.error("Не удалось обновить участника");
+		onError: (error) => {
+			toast.error(error.message || "Не удалось обновить участника");
 		},
 	});
 

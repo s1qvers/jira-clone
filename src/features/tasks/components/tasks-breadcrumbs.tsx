@@ -10,7 +10,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 
 interface TasksBreadcrumbsProps {
-	project: Project;
+	project?: Project | null;
 	task: Task;
 }
 
@@ -28,7 +28,7 @@ export const TasksBreadcrumbs = ({ project, task }: TasksBreadcrumbsProps) => {
 		const ok = await confirm();
 		if (!ok) return;
 		mutate(
-			{ param: { taskId: task.$id } },
+			{ param: { taskId: task.$id || task.id } },
 			{
 				onSuccess: () => {
 					router.push(`/workspaces/${workspaceId}/tasks`);
@@ -40,18 +40,30 @@ export const TasksBreadcrumbs = ({ project, task }: TasksBreadcrumbsProps) => {
 	return (
 		<div className="flex items-center gap-x-2">
 			<ConfirmDialog />
-			<ProjectAvatar
-				name={project.name}
-				image={project.imageUrl}
-				className="size-6 lg:size-8"
-			/>
+			{project ? (
+				<>
+					<ProjectAvatar
+						name={project.name}
+						image={project.imageUrl}
+						className="size-6 lg:size-8"
+					/>
 
-			<Link href={`/workspaces/${workspaceId}/projects/${project.$id}`}>
-				<p className="text-sm lg:text-lg font-semibold text-muted-foreground hover:opacity-75 transition">
-					{project.name}
-				</p>
-			</Link>
-			<ChevronRight className="size-4 lg:size-5 text-muted-foreground" />
+					<Link href={`/workspaces/${workspaceId}/projects/${project.$id || project.id}`}>
+						<p className="text-sm lg:text-lg font-semibold text-muted-foreground hover:opacity-75 transition">
+							{project.name}
+						</p>
+					</Link>
+					<ChevronRight className="size-4 lg:size-5 text-muted-foreground" />
+				</>
+			) : (
+				<>
+					<div className="size-6 lg:size-8 bg-muted rounded-md"></div>
+					<p className="text-sm lg:text-lg font-semibold text-muted-foreground">
+						Проект не найден
+					</p>
+					<ChevronRight className="size-4 lg:size-5 text-muted-foreground" />
+				</>
+			)}
 			<p className="text-sm lg:text-lg font-semibold">{task.name}</p>
 			<Button
 				onClick={handleDeleteTask}

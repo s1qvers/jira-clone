@@ -22,11 +22,11 @@ export const CreateTaskFormWrapper = ({
 	const projectOptions = projects?.documents.map((project) => ({
 		id: project.$id,
 		name: project.name,
-		imageUrl: project.imageUrl,
+		imageUrl: project.imageUrl || "",
 	}));
-	const memberOptions = members?.documents.map((project) => ({
-		id: project.$id,
-		name: project.name,
+	const memberOptions = members?.documents.map((member) => ({
+		id: member.userId,
+		name: member.name
 	}));
 
 	const isLoading = loadingProjects || loadingMembers;
@@ -39,6 +39,9 @@ export const CreateTaskFormWrapper = ({
 			</Card>
 		);
 	}
+	
+	console.log("Доступные исполнители:", memberOptions);
+	
 	return (
 		<CreateTaskForm
 			onCancel={onCancel}

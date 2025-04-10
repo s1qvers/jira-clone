@@ -22,7 +22,7 @@ export const TaskOverview = ({ task }: TaskOverviewProps) => {
 			<div className="bg-muted rounded-lg p-4">
 				<div className="flex items-center justify-between">
 					<p className="text-lg font-semibold">Обзор</p>
-					<Button onClick={() => open(task.$id)} size="sm" variant="secondary">
+					<Button onClick={() => open(task.$id || task.id)} size="sm" variant="secondary">
 						<Pencil className="size-4 mr-2" />
 						Редактировать
 					</Button>
@@ -30,14 +30,24 @@ export const TaskOverview = ({ task }: TaskOverviewProps) => {
 				<DottedSeparator className="my-4" />
 				<div className="flex flex-col gap-y-4">
 					<OverviewProperty label="Assignee">
-						<MemberAvatar name={task.assignee.name} className="size-6" />
-						<p className="text-sm font-medium">{task.assignee.name}</p>
+						{task.assignee ? (
+							<>
+								<MemberAvatar name={task.assignee.name} className="size-6" />
+								<p className="text-sm font-medium">{task.assignee.name}</p>
+							</>
+						) : (
+							<p className="text-sm font-medium text-muted-foreground">Не назначено</p>
+						)}
 					</OverviewProperty>
 					<OverviewProperty label="Due Date">
-						<TaskDate value={task.dueDate} className="text-sm font-medium" />
+						{task.dueDate ? (
+							<TaskDate value={typeof task.dueDate === 'object' ? task.dueDate.toISOString() : task.dueDate} className="text-sm font-medium" />
+						) : (
+							<p className="text-sm font-medium text-muted-foreground">Не задано</p>
+						)}
 					</OverviewProperty>
 					<OverviewProperty label="Status">
-						<Badge variant={task.status}>
+						<Badge variant={task.status as any}>
 							{snakeCaseToTitleCase(task.status)}
 						</Badge>
 					</OverviewProperty>

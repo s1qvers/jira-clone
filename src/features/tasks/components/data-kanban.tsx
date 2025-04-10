@@ -10,7 +10,7 @@ import { KanbanCard } from "./kanban-card";
 import { KanbanColumnHeader } from "./kanban-column-header";
 
 const boards: TaskStatus[] = [
-	TaskStatus.BACKlOG,
+	TaskStatus.BACKLOG,
 	TaskStatus.TODO,
 	TaskStatus.IN_PROGRESS,
 	TaskStatus.IN_REVIEW,
@@ -29,12 +29,13 @@ interface DataKanbanProps {
 			position: number;
 		}[]
 	) => void;
+	onTaskClick?: (task: Task) => void;
 }
 
-export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
+export const DataKanban = ({ data, onChange, onTaskClick }: DataKanbanProps) => {
 	const [tasks, setTasks] = React.useState<TaskState>(() => {
 		const initialTasks: TaskState = {
-			[TaskStatus.BACKlOG]: [],
+			[TaskStatus.BACKLOG]: [],
 			[TaskStatus.TODO]: [],
 			[TaskStatus.IN_PROGRESS]: [],
 			[TaskStatus.IN_REVIEW]: [],
@@ -54,7 +55,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
 
 	useEffect(() => {
 		const newTasks: TaskState = {
-			[TaskStatus.BACKlOG]: [],
+			[TaskStatus.BACKLOG]: [],
 			[TaskStatus.TODO]: [],
 			[TaskStatus.IN_PROGRESS]: [],
 			[TaskStatus.IN_REVIEW]: [],
@@ -116,7 +117,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
 
 				// Always update the the moved task
 				updatesPayload.push({
-					$id: movedTask.$id,
+					$id: movedTask.$id || movedTask.id,
 					status: destinationStatus,
 					position: Math.min((destination.index + 1) * 1000, 1_000_000),
 				});
@@ -127,7 +128,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
 						const newPosition = Math.min((index + 1) * 1000, 1_000_000);
 						if (task.position !== newPosition) {
 							updatesPayload.push({
-								$id: task.$id,
+								$id: task.$id || task.id,
 								status: destinationStatus,
 								position: newPosition,
 							});
@@ -142,7 +143,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
 							const newPosition = Math.min((index + 1) * 1000, 1_000_000);
 							if (task.position !== newPosition) {
 								updatesPayload.push({
-									$id: task.$id,
+									$id: task.$id || task.id,
 									status: sourceStatus,
 									position: newPosition,
 								});
@@ -157,44 +158,57 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
 		},
 		[onChange]
 	);
+
+	const handleTaskClick = (task: Task) => {
+		if (onTaskClick) {
+			onTaskClick(task);
+		}
+	};
+
 	return (
 		<DragDropContext onDragEnd={onDragEnd}>
-			<div className="flex overflow-x-auto">
-				{boards.map((board) => (
-					<div
-						key={board}
-						className="flex-1 mx-2 bg-muted-foreground/20 p-1.5 rounded-md min-w-[200px]"
-					>
-						<KanbanColumnHeader board={board} taskCount={tasks[board].length} />
-						<Droppable key={board} droppableId={board}>
-							{(provided) => (
-								<div
-									{...provided.droppableProps}
-									ref={provided.innerRef}
-									className="min-h-[200px] py-1.5"
-								>
-									{tasks[board].map((task, index) => (
-										<Draggable
-											key={task.$id}
-											draggableId={task.$id}
-											index={index}
-										>
-											{(provided) => (
-												<div
-													ref={provided.innerRef}
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-												>
-													<KanbanCard task={task} />
-												</div>
-											)}
-										</Draggable>
-									))}
+			<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+				{boards.map((status) => (
+					<Droppable droppableId={status} key={status}>
+						{(provided) => (
+							<div
+								className="bg-neutral-100 rounded-md shadow-sm"
+								{...provided.droppableProps}
+								ref={provided.innerRef}
+							>
+								<KanbanColumnHeader
+									board={status}
+									taskCount={data?.filter((task) => task.status === status).length || 0}
+								/>
+
+								<div className="p-2">
+									{data
+										?.filter((task) => task.status === status)
+										.sort((a, b) => a.position - b.position)
+										.map((task, index) => (
+											<Draggable
+												draggableId={task.id}
+												index={index}
+												key={task.id}
+											>
+												{(provided) => (
+													<div
+														className="mb-2 hover:translate-y-[-3px] hover:shadow-md transition hover:scale-[1.03] active:scale-[1.01]"
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+														onClick={() => handleTaskClick(task)}
+													>
+														<KanbanCard task={task} />
+													</div>
+												)}
+											</Draggable>
+										))}
 									{provided.placeholder}
 								</div>
-							)}
-						</Droppable>
-					</div>
+							</div>
+						)}
+					</Droppable>
 				))}
 			</div>
 		</DragDropContext>

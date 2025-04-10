@@ -33,14 +33,14 @@ export const EditTaskFormWrapper = ({
 	});
 
 	const projectOptions = projects?.documents.map((project) => ({
-		id: project.$id,
+		id: project.$id || project.id || '',
 		name: project.name,
-		imageUrl: project.imageUrl,
+		imageUrl: project.imageUrl || '',
 	}));
 
-	const memberOptions = members?.documents.map((project) => ({
-		id: project.$id,
-		name: project.name,
+	const memberOptions = members?.documents.map((member) => ({
+		id: member.userId || '',
+		name: member.name || '',
 	}));
 
 	const isLoading = loadingProjects || loadingMembers || taskLoading;
@@ -55,6 +55,13 @@ export const EditTaskFormWrapper = ({
 		);
 	}
 	if (!initialValues) return null;
+	
+	console.log("Данные задачи для редактирования:", initialValues);
+	console.log("Проекты:", projectOptions);
+	console.log("Участники:", memberOptions);
+	console.log("Id исполнителя задачи:", initialValues.assigneeId);
+	console.log("Проверка наличия исполнителя в списке:", memberOptions?.some(member => member.id === initialValues.assigneeId));
+	
 	return (
 		<EditTaskForm
 			initialValues={initialValues}

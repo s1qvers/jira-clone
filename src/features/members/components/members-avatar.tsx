@@ -2,13 +2,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface MemberAvatarProps {
-	name: string;
+	name?: string;
 	className?: string;
 	fallbackClassName?: string;
 }
 
 export const MemberAvatar = ({
-	name,
+	name = "",
 	className,
 	fallbackClassName,
 }: MemberAvatarProps) => {
