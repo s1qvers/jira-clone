@@ -21,9 +21,24 @@ export const generateInviteCode = (length: number) => {
 
 export const INVITECODE_LENGTH = 6;
 
-export const snakeCaseToTitleCase = (str: string) => {
-	return str
-		.toLowerCase()
+export function snakeCaseToTitleCase(s: string): string {
+	// Переводим статусы задач на русский
+	const translations: Record<string, string> = {
+		"BACKLOG": "Бэклог",
+		"TODO": "К выполнению",
+		"IN_PROGRESS": "В процессе",
+		"IN_REVIEW": "На проверке",
+		"DONE": "Выполнено"
+	};
+	
+	// Если есть прямой перевод, используем его
+	if (translations[s]) {
+		return translations[s];
+	}
+	
+	// Иначе используем стандартное форматирование
+	return s
 		.replace(/_/g, " ")
-		.replace(/\b\w/g, (letter) => letter.toUpperCase());
-};
+		.toLowerCase()
+		.replace(/\b\w/g, (char) => char.toUpperCase());
+}

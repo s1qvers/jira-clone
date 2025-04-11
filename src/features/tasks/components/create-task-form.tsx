@@ -36,6 +36,7 @@ import {
 
 import { TaskStatus } from "../types";
 import { useCreateTask } from "../api/use-create-task";
+import { TaskStatusLabels } from "./data-kanban";
 
 interface CreateTaskFormProps {
 	onCancel?: () => void;
@@ -159,7 +160,7 @@ export const CreateTaskForm = ({
 								name="dueDate"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Две даты</FormLabel>
+										<FormLabel>Срок выполнения</FormLabel>
 										<FormControl>
 											<DatePicker {...field} />
 										</FormControl>
@@ -172,7 +173,7 @@ export const CreateTaskForm = ({
 								name="assigneeId"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Правопреемник</FormLabel>
+										<FormLabel>Ответственный</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={field.value}
@@ -220,7 +221,8 @@ export const CreateTaskForm = ({
 											<SelectContent>
 												{Object.entries(TaskStatus).map(([key, value]) => (
 													<SelectItem key={value} value={value}>
-														{key
+														{TaskStatusLabels[value] || 
+														key
 															.replace("_", " ")
 															.toLowerCase()
 															.replace(/\b\w/g, (char) => char.toUpperCase())}

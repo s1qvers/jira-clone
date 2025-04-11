@@ -8,6 +8,7 @@ import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { format } from "date-fns";
+import { ru } from 'date-fns/locale';
 import { Calendar } from "./ui/calendar";
 
 interface DatePickerProps {
@@ -33,7 +34,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
 						)}
 					>
 						<CalendarIcon className="size-4 mr-2" />
-						{value ? format(value, "PPP") : <span>{placeholder}</span>}
+						{value ? format(value, "d MMMM yyyy", { locale: ru }) : <span>{placeholder}</span>}
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className="w-auto p-0">

@@ -20,6 +20,16 @@ const boards: TaskStatus[] = [
 type TaskState = {
 	[key in TaskStatus]: Task[];
 };
+
+// Переводы для статусов задач
+export const TaskStatusLabels: Record<TaskStatus, string> = {
+	[TaskStatus.BACKLOG]: "Бэклог",
+	[TaskStatus.TODO]: "К выполнению",
+	[TaskStatus.IN_PROGRESS]: "В процессе",
+	[TaskStatus.IN_REVIEW]: "На проверке",
+	[TaskStatus.DONE]: "Выполнено",
+};
+
 interface DataKanbanProps {
 	data: Task[];
 	onChange: (

@@ -33,7 +33,7 @@ export const WorkspaceSwitcher = () => {
 			</div>
 			<Select onValueChange={onSelect} value={workspaceId || undefined}>
 				<SelectTrigger className="w-full bg-neutral-200 font-medium p-1">
-					<SelectValue placeholder="No workspace selected" />
+					<SelectValue placeholder="Рабочее пространство не выбрано" />
 				</SelectTrigger>
 				<SelectContent>
 					{data?.documents?.map((workspace) => (

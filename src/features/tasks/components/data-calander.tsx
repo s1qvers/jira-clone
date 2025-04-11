@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 
-import { enUS } from "date-fns/locale";
+import { ru } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
 import { Task } from "../types";
@@ -20,13 +20,13 @@ import { EventCard } from "./event-card";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 
 const locales = {
-	"en-US": enUS,
+	"ru": ru,
 };
 
 const localizer = dateFnsLocalizer({
 	format,
 	parse,
-	startOfWeek,
+	startOfWeek: () => startOfWeek(new Date(), { locale: ru }),
 	getDay,
 	locales,
 });
@@ -50,7 +50,7 @@ const CustomToolbar = ({ onNavigate, date }: CustomToolbarProps) => {
 			</Button>
 			<div className="flex items-center border border-input rounded-md px-3 py-2 h-8 w-full  lg:w-auto">
 				<CalendarIcon className="size-4 mr-2" />
-				<p className="text-sm">{format(date, "MMMM yyyy")}</p>
+				<p className="text-sm">{format(date, "LLLL yyyy", { locale: ru })}</p>
 			</div>
 			<Button
 				onClick={() => onNavigate("NEXT")}
@@ -87,6 +87,23 @@ export const DataCalander = ({ data }: DataCalendarProps) => {
 				: new Date()
 		);
 	};
+	
+	// Перевод для календаря
+	const messages = {
+		allDay: 'Весь день',
+		previous: 'Назад',
+		next: 'Вперед',
+		today: 'Сегодня',
+		month: 'Месяц',
+		week: 'Неделя',
+		day: 'День',
+		agenda: 'Повестка',
+		date: 'Дата',
+		time: 'Время',
+		event: 'Событие',
+		noEventsInRange: 'Нет событий в этом диапазоне',
+	};
+	
 	return (
 		<Calendar
 			localizer={localizer}
@@ -97,10 +114,17 @@ export const DataCalander = ({ data }: DataCalendarProps) => {
 			toolbar={true}
 			showAllEvents={true}
 			className="h-full"
+			culture="ru"
+			messages={messages}
 			max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
 			formats={{
 				weekdayFormat: (date, culture, localizer) =>
-					localizer?.format(date, "EEE", culture) ?? "",
+					localizer?.format(date, "EEEE", culture)?.slice(0, 2) ?? "",
+				monthHeaderFormat: (date, culture, localizer) =>
+					localizer?.format(date, "LLLL yyyy", culture) ?? "",
+				dayFormat: (date, culture, localizer) =>
+					localizer?.format(date, "d", culture) ?? "",
+				eventTimeRangeFormat: () => "",
 			}}
 			components={{
 				eventWrapper: ({ event }) => (

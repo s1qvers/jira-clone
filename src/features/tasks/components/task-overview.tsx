@@ -29,7 +29,7 @@ export const TaskOverview = ({ task }: TaskOverviewProps) => {
 				</div>
 				<DottedSeparator className="my-4" />
 				<div className="flex flex-col gap-y-4">
-					<OverviewProperty label="Assignee">
+					<OverviewProperty label="Ответственный">
 						{task.assignee ? (
 							<>
 								<MemberAvatar name={task.assignee.name} className="size-6" />
@@ -39,14 +39,14 @@ export const TaskOverview = ({ task }: TaskOverviewProps) => {
 							<p className="text-sm font-medium text-muted-foreground">Не назначено</p>
 						)}
 					</OverviewProperty>
-					<OverviewProperty label="Due Date">
+					<OverviewProperty label="Срок выполнения">
 						{task.dueDate ? (
 							<TaskDate value={typeof task.dueDate === 'object' ? task.dueDate.toISOString() : task.dueDate} className="text-sm font-medium" />
 						) : (
 							<p className="text-sm font-medium text-muted-foreground">Не задано</p>
 						)}
 					</OverviewProperty>
-					<OverviewProperty label="Status">
+					<OverviewProperty label="Статус">
 						<Badge variant={task.status as any}>
 							{snakeCaseToTitleCase(task.status)}
 						</Badge>

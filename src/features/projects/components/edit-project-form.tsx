@@ -173,7 +173,7 @@ export const EditProjectForm = ({
 										<FormItem>
 											<FormLabel>Название проекта</FormLabel>
 											<FormControl>
-												<Input {...field} placeholder="Enter project name" />
+												<Input {...field} placeholder="Введите название проекта" />
 											</FormControl>
 											<FormMessage />
 										</FormItem>

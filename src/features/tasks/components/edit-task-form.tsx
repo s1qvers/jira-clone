@@ -34,6 +34,7 @@ import {
 
 import { TaskStatus, Task } from "../types";
 import { useUpdateTask } from "../api/use-update-task";
+import { TaskStatusLabels } from "./data-kanban";
 
 interface EditTaskFormProps {
 	onCancel?: () => void;
@@ -227,7 +228,8 @@ export const EditTaskForm = ({
 											<SelectContent>
 												{Object.entries(TaskStatus).map(([key, value]) => (
 													<SelectItem key={value} value={value}>
-														{key
+														{TaskStatusLabels[value] || 
+														key
 															.replace("_", " ")
 															.toLowerCase()
 															.replace(/\b\w/g, (char) => char.toUpperCase())}

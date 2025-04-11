@@ -3,6 +3,7 @@
 import * as React from "react"
 import {ChevronLeftIcon, ChevronRightIcon} from "@radix-ui/react-icons"
 import {DayPicker} from "react-day-picker"
+import { ru } from 'date-fns/locale'
 
 import {cn} from "@/lib/utils"
 import {buttonVariants} from "@/components/ui/button"
@@ -63,6 +64,7 @@ function Calendar({
         IconLeft: () => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: () => <ChevronRightIcon className="h-4 w-4" />,
       }}
+      locale={ru}
       {...props}
     />
   )
