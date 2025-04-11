@@ -12,6 +12,7 @@ import { MemberAvatar } from "@/features/members/components/members-avatar";
 
 import { TaskDate } from "./task-date";
 import { TaskActions } from "./task-actions";
+import { TaskStatusLabels } from "./data-kanban";
 
 export const columns: ColumnDef<Task>[] = [
 	{
@@ -67,7 +68,7 @@ export const columns: ColumnDef<Task>[] = [
 					variant="ghost"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
-					Правопреемник
+					Ответственный
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
@@ -94,7 +95,7 @@ export const columns: ColumnDef<Task>[] = [
 					variant="ghost"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
-					Срок погашения
+					Срок выполнения
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
@@ -119,7 +120,7 @@ export const columns: ColumnDef<Task>[] = [
 		},
 		cell: ({ row }) => {
 			const status = row.original.status;
-			return <Badge variant={status}>{snakeCaseToTitleCase(status)}</Badge>;
+			return <Badge variant={status}>{TaskStatusLabels[status] || snakeCaseToTitleCase(status)}</Badge>;
 		},
 	},
 	{

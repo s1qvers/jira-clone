@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { differenceInDays, format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 interface TaskDateProps {
 	value: string;
@@ -23,7 +24,9 @@ export const TaskDate = ({ value, className }: TaskDateProps) => {
 
 	return (
 		<div className={textColor}>
-			<span className={cn("truncate", className)}>{format(value, "PPP")}</span>
+			<span className={cn("truncate", className)}>
+				{format(new Date(value), "d MMMM yyyy", { locale: ru })}
+			</span>
 		</div>
 	);
 };

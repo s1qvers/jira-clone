@@ -15,6 +15,7 @@ import {
 import { TaskStatus } from "../types";
 import { useTaskFilter } from "../hooks/use-task-filter";
 import { DatePicker } from "@/components/date-picker";
+import { TaskStatusLabels } from "./data-kanban";
 
 interface DataFiltersProps {
 	hideProjectFilter?: boolean;
@@ -73,7 +74,8 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 					<SelectSeparator />
 					{Object.entries(TaskStatus).map(([key, value]) => (
 						<SelectItem key={value} value={value}>
-							{key
+							{TaskStatusLabels[value] || 
+							key
 								.replace("_", " ")
 								.toLowerCase()
 								.replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -88,11 +90,11 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 				<SelectTrigger className="w-full lg:w-auto h-8">
 					<div className="flex items-center pr-2">
 						<UserCog2 className="size-4 mr-2" />
-						<SelectValue placeholder="Все правопреемники" />
+						<SelectValue placeholder="Все ответственные" />
 					</div>
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value="all">Все правопреемники</SelectItem>
+					<SelectItem value="all">Все ответственные</SelectItem>
 					<SelectSeparator />
 					{memberOptions?.map((member) => (
 						<SelectItem key={member.value} value={member.value}>
@@ -124,7 +126,7 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
 				</Select>
 			)}
 			<DatePicker
-				placeholder="Срок погашения"
+				placeholder="Срок выполнения"
 				className="w-full lg:w-auto h-8"
 				value={dueDate ? new Date(dueDate) : undefined}
 				onChange={(date) =>
