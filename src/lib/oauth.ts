@@ -1,20 +1,19 @@
-"use server";
+"use client";
 
-import { createAdminClient } from "@/lib/appwrite";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { OAuthProvider } from "node-appwrite";
+import { toast } from "sonner";
 
-export async function signUpWithGithub() {
-	const { account } = await createAdminClient();
-
-	const origin = headers().get("origin");
-
-	const redirectUrl = await account.createOAuth2Token(
-		OAuthProvider.Github,
-		`${origin}/oauth`,
-		`${origin}/sign-up`
+// Заглушка для функции авторизации через GitHub
+// В полной реализации здесь был бы код для OAuth через GitHub API
+export function signUpWithGithub() {
+	// Показываем пользователю уведомление
+	toast.info(
+		"Авторизация через GitHub временно недоступна. Пожалуйста, используйте форму регистрации.",
+		{
+			duration: 5000,
+		}
 	);
-
-	return redirect(redirectUrl);
+	
+	// В будущем можно реализовать полноценную OAuth авторизацию через GitHub API
+	// например используя next-auth или собственную реализацию
+	console.log("Функция авторизации через GitHub требует реализации");
 }
