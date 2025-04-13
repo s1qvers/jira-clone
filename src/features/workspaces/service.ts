@@ -60,7 +60,11 @@ export async function updateWorkspace(workspaceId: string, data: { name?: string
     where: {
       id: workspaceId
     },
-    data
+    data: {
+      ...data,
+      // Если imageUrl явно установлен в null, удаляем изображение
+      imageUrl: data.imageUrl === null ? null : data.imageUrl
+    }
   });
 
   return workspace;

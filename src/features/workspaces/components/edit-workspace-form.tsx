@@ -72,7 +72,7 @@ export const EditWorkspaceForm = ({
 	const onSumbit = (values: UpdateWorkspaceSchema) => {
 		const finalValues = {
 			...values,
-			image: values.image instanceof File ? values.image : values.image === null ? null : "",
+			image: values.image instanceof File ? values.image : values.image === null ? null : values.image,
 		};
 		const workspaceId = initialValues.id || initialValues.$id;
 		console.log("Отправка данных на сервер:", {
@@ -84,8 +84,8 @@ export const EditWorkspaceForm = ({
 			param: { workspaceId },
 		}, {
 			onSuccess: () => {
-				// Не перенаправляем, просто показываем уведомление
-				toast.success("Рабочее пространство успешно обновлено");
+				// Принудительно обновляем страницу после успешного обновления
+				window.location.reload();
 			}
 		});
 	};

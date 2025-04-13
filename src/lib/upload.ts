@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import path from 'path';
 
 // Настройка Cloudinary
 cloudinary.config({
@@ -9,78 +11,55 @@ cloudinary.config({
 });
 
 /**
- * Загружает изображение в Cloudinary
+ * Загружает изображение локально
  * @param file Файл изображения для загрузки
- * @param folder Папка в Cloudinary для сохранения (опционально)
+ * @param folder Папка для сохранения (опционально)
  * @returns URL загруженного изображения
  */
 export async function uploadImage(file: File, folder = 'jira_clone'): Promise<string> {
   try {
-    // В режиме разработки используем локальный путь для изображения
-    if (process.env.NODE_ENV !== 'production') {
-      // Генерируем уникальное имя для файла
-      const randomId = Math.random().toString(36).substring(2, 15);
-      const fileName = `${randomId}-${Date.now()}.${file.name.split('.').pop()}`;
-      
-      console.log(`Использую локальный плейсхолдер вместо Cloudinary: ${fileName}`);
-      
-      // В тестовом режиме возвращаем плейсхолдер
-      // В реальном проекте здесь можно было бы сохранить файл в папку public
-      return `/placeholder-${randomId}.png`;
-    }
+    // Генерируем уникальное имя для файла
+    const randomId = Math.random().toString(36).substring(2, 15);
+    const fileName = `${randomId}-${Date.now()}.${file.name.split('.').pop()}`;
+    const uploadPath = path.join(process.cwd(), 'public', 'uploads', fileName);
     
-    // Реальная загрузка в Cloudinary для продакшена
-    // Преобразуем File в буфер для загрузки
+    // Преобразуем File в буфер
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    // Создаем base64 строку для загрузки
-    const base64Data = `data:${file.type};base64,${buffer.toString('base64')}`;
+    // Сохраняем файл
+    await fs.promises.writeFile(uploadPath, buffer);
     
-    // Загружаем изображение в Cloudinary
-    const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader.upload(
-        base64Data,
-        { folder, resource_type: 'image' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-    });
-    
-    // Возвращаем URL загруженного изображения
-    return result.secure_url;
+    // Возвращаем относительный путь к файлу
+    return `/uploads/${fileName}`;
   } catch (error) {
     console.error('Ошибка при загрузке изображения:', error);
-    
     // Возвращаем плейсхолдер в случае ошибки
-    const randomId = Math.random().toString(36).substring(2, 15);
-    return `/placeholder-${randomId}.png`;
+    return '/placeholder.png';
   }
 }
 
 /**
- * Удаляет изображение из Cloudinary
- * @param publicId Публичный ID изображения
+ * Удаляет изображение
+ * @param imagePath Путь к изображению
  * @returns Результат удаления
  */
-export async function deleteImage(publicId: string): Promise<boolean> {
+export async function deleteImage(imagePath: string): Promise<boolean> {
   try {
-    // В режиме разработки пропускаем удаление
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`Псевдо-удаление изображения: ${publicId}`);
+    // Если это плейсхолдер, пропускаем удаление
+    if (imagePath.startsWith('/placeholder')) {
       return true;
     }
     
-    const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader.destroy(publicId, (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      });
-    });
+    // Получаем полный путь к файлу
+    const fullPath = path.join(process.cwd(), 'public', imagePath);
     
-    return result.result === 'ok';
+    // Проверяем существование файла
+    if (fs.existsSync(fullPath)) {
+      await fs.promises.unlink(fullPath);
+    }
+    
+    return true;
   } catch (error) {
     console.error('Ошибка при удалении изображения:', error);
     return false;
@@ -88,26 +67,20 @@ export async function deleteImage(publicId: string): Promise<boolean> {
 }
 
 /**
- * Извлекает publicId из URL Cloudinary
- * @param url URL изображения Cloudinary
- * @returns Public ID изображения
+ * Извлекает имя файла из URL
+ * @param url URL изображения
+ * @returns Имя файла
  */
 export function getPublicIdFromUrl(url: string): string | null {
   try {
-    // Для локальных URL возвращаем сам URL
+    // Для плейсхолдеров возвращаем сам URL
     if (url.startsWith('/placeholder')) {
       return url;
     }
     
-    // URL будет иметь формат: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/folder/filename.jpg
-    const regex = /\/v\d+\/(.+)\.\w+$/;
-    const match = url.match(regex);
-    
-    if (match && match[1]) {
-      return match[1];
-    }
-    
-    return null;
+    // Извлекаем имя файла из URL
+    const fileName = url.split('/').pop();
+    return fileName || null;
   } catch (error) {
     return null;
   }

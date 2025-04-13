@@ -60,22 +60,17 @@ export const useUpdateWorkspace = () => {
 				method: 'PATCH',
 				body: formData
 			});
-			
+
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				console.error("Ошибка при обновлении рабочего пространства:", {
-					status: response.status,
-					statusText: response.statusText,
-					errorData
-				});
-				throw new Error("Не удалось обновить рабочую область");
+				throw new Error('Ошибка при обновлении рабочего пространства');
 			}
-			return await response.json();
+
+			return response.json();
 		},
-		onSuccess: ({ data }) => {
-			// Инвалидируем кэш всех рабочих пространств, чтобы обновления отображались на главной странице
-			queryClient.invalidateQueries({ queryKey: ["workspaces"] });
-			queryClient.invalidateQueries({ queryKey: ["workspace", data.$id] });
+		onSuccess: () => {
+			// Инвалидируем кеш для обновления данных
+			queryClient.invalidateQueries({ queryKey: ['workspace'] });
+			queryClient.invalidateQueries({ queryKey: ['workspaces'] });
 		},
 		onError: (error) => {
 			console.error("Ошибка в хуке useUpdateWorkspace:", error);
