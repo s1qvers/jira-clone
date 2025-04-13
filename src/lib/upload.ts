@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
+import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '@/config';
 
 // Настройка Cloudinary
 cloudinary.config({
@@ -18,6 +19,16 @@ cloudinary.config({
  */
 export async function uploadImage(file: File, folder = 'jira_clone'): Promise<string> {
   try {
+    // Проверяем размер файла
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('Файл слишком большой. Максимальный размер: 1 MB');
+    }
+
+    // Проверяем тип файла
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      throw new Error('Неподдерживаемый тип файла. Разрешены только: JPEG, PNG, SVG');
+    }
+
     // Генерируем уникальное имя для файла
     const randomId = Math.random().toString(36).substring(2, 15);
     const fileName = `${randomId}-${Date.now()}.${file.name.split('.').pop()}`;

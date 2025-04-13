@@ -1,4 +1,17 @@
 import { z } from "zod";
+import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/config";
+
+const imageSchema = z.union([
+	z.instanceof(File).refine(
+		(file) => file.size <= MAX_FILE_SIZE,
+		`Файл слишком большой. Максимальный размер: ${MAX_FILE_SIZE / (1024 * 1024)}MB`
+	).refine(
+		(file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+		"Неподдерживаемый тип файла. Разрешены только: JPEG, PNG, SVG"
+	),
+	z.string().transform((value) => (value === "" ? undefined : value)),
+	z.null().transform(() => undefined),
+]).optional();
 
 export const createProjectSchema = z.object({
 	name: z.string().trim().min(1, { message: "Необходимый" }),
@@ -9,9 +22,9 @@ export const createProjectSchema = z.object({
 			z.null().transform(() => undefined),
 		])
 		.optional(),
-
 	workspaceId: z.string(),
 });
+
 export const updateProjectSchema = z.object({
 	name: z
 		.string()
