@@ -201,7 +201,7 @@ export const EditProjectForm = ({
 										<div className="flex flex-col gap-y-2">
 											<div className="flex items-center gap-x-5">
 												{field.value ? (
-													<div className="size-[72px] relative rounded-md overflow-hidden">
+													<div className="size-[80px] relative rounded-md overflow-hidden">
 														<Image
 															fill
 															src={
@@ -214,7 +214,7 @@ export const EditProjectForm = ({
 														/>
 													</div>
 												) : (
-													<Avatar className="size-[72px]">
+													<Avatar className="size-[80px]">
 														<AvatarFallback>
 															<ImageIcon className="size-[36px] text-neutral-400" />
 														</AvatarFallback>

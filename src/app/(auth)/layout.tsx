@@ -12,7 +12,15 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
 		<main className="bg-neutral-100 min-h-screen">
 			<div className="mx-auto max-w-screen-2xl p-4">
 				<nav className="flex items-center justify-between">
-					<Image src="/logo.png" width={150} height={56} alt="logo" />
+					<div className="w-[60px] h-[60px] relative">
+						<Image 
+							src="/logo.png" 
+							alt="Jira Clone" 
+							priority 
+							fill
+							className="object-contain" 
+						/>
+					</div>
 
 					<Button asChild variant="secondary">
 						<Link href={isSignIn ? "/sign-up" : "/sign-in"}>

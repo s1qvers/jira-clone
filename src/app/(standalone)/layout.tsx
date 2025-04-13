@@ -8,8 +8,14 @@ const StandaloneLayout = ({ children }: PropsWithChildren) => {
 		<main className="min-h-screen bg-neutral-100">
 			<div className="mx-auto max-w-screen-2xl p-4">
 				<nav className="flex justify-between items-center h-[73px]">
-					<Link href="/">
-						<Image src="/logo.png" width={152} height={56} alt="logo" />
+					<Link href="/" className="w-[80px] h-[80px] relative">
+						<Image 
+							src="/logo.png" 
+							alt="Jira Clone" 
+							priority 
+							fill
+							className="object-contain" 
+						/>
 					</Link>
 					<UserButton />
 				</nav>
