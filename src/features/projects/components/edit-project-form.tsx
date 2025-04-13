@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/config";
 
 import { useConfirm } from "@/hooks/use-confirm";
 
@@ -61,13 +62,13 @@ export const EditProjectForm = ({
 	const onSumbit = (values: UpdateProjectSchema) => {
 		const finalValues = {
 			...values,
-			image: values.image instanceof File ? values.image : "",
+			image: values.image instanceof File ? values.image : values.image,
 		};
 		
 		// Используем id вместо $id для передачи ID проекта
 		const projectId = initialValues.id || initialValues.$id;
 		
-		console.log("Обновление проекта с ID:", projectId);
+		console.log("Обновление проекта с ID:", projectId, "Значения:", finalValues);
 		
 		mutate(
 			{
@@ -76,11 +77,11 @@ export const EditProjectForm = ({
 			},
 			{
 				onSuccess: () => {
-					// Можно добавить дополнительные действия при успешном обновлении
-					console.log("Проект успешно обновлен");
+					toast.success("Проект успешно обновлен");
+					// Перезагружаем страницу для обновления данных
+					window.location.reload();
 				},
 				onError: (error) => {
-					// Показываем более информативное сообщение об ошибке
 					console.error("Ошибка при обновлении проекта:", error);
 					toast.error(error.message || "Не удалось обновить проект");
 				}
@@ -90,6 +91,20 @@ export const EditProjectForm = ({
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
+			// Проверяем размер файла
+			if (file.size > MAX_FILE_SIZE) {
+				toast.error("Файл слишком большой. Максимальный размер: 1 MB");
+				if (inputRef.current) inputRef.current.value = "";
+				return;
+			}
+
+			// Проверяем тип файла
+			if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+				toast.error("Неподдерживаемый тип файла. Разрешены только: JPEG, PNG, SVG");
+				if (inputRef.current) inputRef.current.value = "";
+				return;
+			}
+
 			form.setValue("image", file);
 		}
 	};
