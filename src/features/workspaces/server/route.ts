@@ -91,34 +91,23 @@ const app = new Hono()
 		sessionMiddleware,
 		zValidator("form", updateWorkspaceSchema),
 		async (c) => {
-			const user = c.get("user");
 			const { workspaceId } = c.req.param();
+			const user = c.get("user");
 			const { name, image } = c.req.valid("form");
-			
-			console.log("PATCH /workspaces/:workspaceId - Полученные данные:", {
-				workspaceId,
-				name,
-				image: image instanceof File ? "File Object" : image,
-				imageType: typeof image,
-				isNull: image === null,
-				isNullString: image === 'null'
-			});
-			
-			// Проверяем права пользователя
-			const member = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
 
-			if (!member || member.role !== MemberRole.ADMIN) {
+			// Проверяем, что пользователь имеет доступ к рабочему пространству
+			const member = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
+			if (!member) {
 				return c.json({ error: "Неавторизованный" }, 401);
 			}
 
 			// Получаем текущее рабочее пространство
 			const existingWorkspace = await getWorkspaceById(workspaceId);
-			
 			if (!existingWorkspace) {
 				return c.json({ error: "Рабочее пространство не найдено" }, 404);
 			}
 
-			let uploadedImage: string | undefined | null = undefined;
+			let uploadedImage: string | null | undefined;
 			
 			// Загружаем новое изображение, если оно есть
 			if (image instanceof File) {
@@ -138,36 +127,27 @@ const app = new Hono()
 					// В случае ошибки сохраняем текущее изображение
 					uploadedImage = existingWorkspace.imageUrl || undefined;
 				}
-			} else if (image === null && existingWorkspace.imageUrl) {
-				// Если image = null, значит пользователь удалил изображение
+			} else if (image === null || image === 'null') {
+				// Если image = null или 'null', значит пользователь удалил изображение
 				try {
-					const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
-					if (publicId) {
-						await deleteImage(publicId);
+					if (existingWorkspace.imageUrl) {
+						const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
+						if (publicId) {
+							await deleteImage(publicId);
+						}
 					}
 					uploadedImage = null;
 				} catch (error) {
 					console.error('Ошибка при удалении изображения:', error);
-				}
-			} else if (image === 'null' && existingWorkspace.imageUrl) {
-				// Обработка строкового значения 'null' от клиента
-				try {
-					console.log('Обрабатываем строковое значение "null", удаляем существующее изображение');
-					const publicId = getPublicIdFromUrl(existingWorkspace.imageUrl);
-					if (publicId) {
-						await deleteImage(publicId);
-					}
 					uploadedImage = null;
-				} catch (error) {
-					console.error('Ошибка при удалении изображения:', error);
 				}
 			} else if (typeof image === 'string') {
 				uploadedImage = image;
 			}
 			
 			const updatedWorkspace = await updateWorkspace(workspaceId, {
-					name,
-			  imageUrl: uploadedImage
+				name,
+				imageUrl: uploadedImage
 			});
 
 			return c.json({ data: updatedWorkspace });
