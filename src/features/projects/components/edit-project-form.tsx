@@ -93,7 +93,7 @@ export const EditProjectForm = ({
 		if (file) {
 			// Проверяем размер файла
 			if (file.size > MAX_FILE_SIZE) {
-				toast.error("Файл слишком большой. Максимальный размер: 1 MB");
+				toast.error(`Файл слишком большой. Максимальный размер: ${MAX_FILE_SIZE / (1024 * 1024)} MB`);
 				if (inputRef.current) inputRef.current.value = "";
 				return;
 			}
