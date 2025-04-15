@@ -6,7 +6,7 @@ export const createWorkspaceSchema = z.object({
 		.union([
 			z.instanceof(File),
 			z.string().transform((value) => (value === "" ? undefined : value)),
-			z.null().transform(() => null),
+			z.null().transform(() => undefined),
 		])
 		.optional(),
 });

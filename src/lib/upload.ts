@@ -32,7 +32,22 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
     // Генерируем уникальное имя для файла
     const randomId = Math.random().toString(36).substring(2, 15);
     const fileName = `${randomId}-${Date.now()}.${file.name.split('.').pop()}`;
-    const uploadPath = path.join(process.cwd(), 'public', 'uploads', fileName);
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadPath = path.join(uploadDir, fileName);
+    
+    console.log("Загрузка изображения:", {
+      fileName,
+      uploadDir,
+      uploadPath,
+      fileSize: file.size,
+      fileType: file.type
+    });
+    
+    // Создаем директорию, если она не существует
+    if (!fs.existsSync(uploadDir)) {
+      console.log("Директория uploads не существует, создаем...");
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
     
     // Преобразуем File в буфер
     const arrayBuffer = await file.arrayBuffer();
@@ -40,6 +55,7 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
     
     // Сохраняем файл
     await fs.promises.writeFile(uploadPath, buffer);
+    console.log("Файл успешно сохранен:", uploadPath);
     
     // Возвращаем относительный путь к файлу
     return `/uploads/${fileName}`;
