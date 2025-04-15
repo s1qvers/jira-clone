@@ -70,10 +70,20 @@ const app = new Hono()
 			const { name, image } = c.req.valid("form");
 			let uploadedImage: string | undefined;
 			
+			console.log("Создание рабочего пространства - полученные данные:", {
+				name,
+				image: image instanceof File ? "File Object" : image,
+				imageType: typeof image,
+				imageInstanceofFile: image instanceof File,
+				imageSize: image instanceof File ? image.size : null
+			});
+			
 			// Загружаем изображение в Cloudinary, если оно есть
 			if (image instanceof File) {
 				try {
+					console.log("Начинаем загрузку изображения рабочего пространства");
 					uploadedImage = await uploadImage(image, 'jira_clone/workspaces');
+					console.log("Изображение успешно загружено:", uploadedImage);
 				} catch (error) {
 					console.error('Ошибка при загрузке изображения:', error);
 					// В случае ошибки используем локальную заглушку
@@ -82,8 +92,19 @@ const app = new Hono()
 			}
 			
 			const workspace = await createWorkspace(user.id, name, uploadedImage);
+			console.log("Рабочее пространство создано:", {
+				id: workspace.id,
+				name: workspace.name,
+				imageUrl: workspace.imageUrl
+			});
 			
-			return c.json({ data: workspace });
+			// Добавляем свойство $id для совместимости с клиентским кодом
+			const response = {
+				...workspace,
+				$id: workspace.id
+			};
+			
+			return c.json({ data: response });
 		}
 	)
 	.patch(
