@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DottedSeparator } from "@/components/dotted-separator";
@@ -27,18 +28,46 @@ export const JoinWorkspaceForm = ({
 	workspaceId,
 }: JoinWorkspaceFormProps) => {
 	const router = useRouter();
+	const [errorMessage, setErrorMessage] = useState("");
 	const { mutate, isPending } = useJoinWorkspace();
 
 	const onSubmit = () => {
+		setErrorMessage("");
+		console.log("Отправляем запрос с данными:", {
+			param: { workspaceId },
+			json: { 
+				inviteCode,
+				code: inviteCode // Для обратной совместимости, если сервер ожидает 'code'
+			}
+		});
+		
 		mutate(
 			{
 				param: { workspaceId },
-				json: { code: inviteCode },
+				json: { 
+					inviteCode,
+					code: inviteCode // Для обратной совместимости, если сервер ожидает 'code'
+				},
 			},
 			{
 				onSuccess: ({ data }) => {
+					console.log("Успешно присоединились к рабочему пространству:", data);
 					router.push(`/workspaces/${data.$id}`);
 				},
+				onError: (error) => {
+					console.error("Ошибка при присоединении:", error);
+					
+					// Если ошибка связана с тем, что пользователь уже участник,
+					// предлагаем перейти на страницу рабочего пространства
+					if (error.message.includes("уже являетесь участником")) {
+						setErrorMessage("Вы уже являетесь участником этого рабочего пространства");
+						setTimeout(() => {
+							router.push(`/workspaces/${workspaceId}`);
+						}, 2000);
+					} else {
+						setErrorMessage(error.message || "Не удалось присоединиться к рабочему пространству");
+					}
+				}
 			}
 		);
 	};
@@ -48,9 +77,14 @@ export const JoinWorkspaceForm = ({
 			<CardHeader className="p-7">
 				<CardTitle className="text-xl font-bold">Присоединиться к рабочему пространству</CardTitle>
 				<CardDescription>
-				Вы&apos;Меня пригласили присоединиться <strong>{initialValues.name}</strong>{" "}
-				рабочее место
+				Вас пригласили присоединиться к <strong>{initialValues.name}</strong>{" "}
+				рабочему пространству
 				</CardDescription>
+				{errorMessage && (
+					<div className="mt-4 p-4 bg-red-50 text-red-700 rounded-md border border-red-200">
+						<p className="font-medium">{errorMessage}</p>
+					</div>
+				)}
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
