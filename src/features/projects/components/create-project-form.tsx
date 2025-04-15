@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -35,6 +35,8 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 	const router = useRouter();
 	const { mutate, isPending } = useCreateProject();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [imgError, setImgError] = useState(false);
+	
 	const form = useForm<CreateProjectSchema>({
 		resolver: zodResolver(createProjectSchema.omit({ workspaceId: true })),
 		defaultValues: {
@@ -48,6 +50,13 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 			image: values.image instanceof File ? values.image : "",
 			workspaceId,
 		};
+		
+		console.log("Создание проекта с данными:", {
+			name: finalValues.name,
+			hasImage: Boolean(finalValues.image),
+			workspaceId
+		});
+		
 		mutate(
 			{ form: finalValues },
 			{
@@ -62,6 +71,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			form.setValue("image", file);
+			setImgError(false); // Сбрасываем флаг ошибки при новой загрузке
 		}
 	};
 
@@ -96,19 +106,18 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 								render={({ field }) => (
 									<div className="flex flex-col gap-y-2">
 										<div className="flex items-center gap-x-5">
-											{field.value ? (
+											{field.value && !imgError ? (
 												<div className="size-[80px] relative rounded-md overflow-hidden">
 													<Image
 														fill
 														src={
 															field.value instanceof File
 																? URL.createObjectURL(field.value)
-																: typeof field.value === 'string' && field.value.startsWith('/placeholder')
-																	? '/placeholder.png'
-																	: field.value
+																: field.value
 														}
 														alt="Project Icon"
 														className="object-cover"
+														onError={() => setImgError(true)}
 													/>
 												</div>
 											) : (
@@ -131,7 +140,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 													onChange={handleImageChange}
 													accept=".jpg, .jpeg, .png, .svg"
 												/>
-												{field.value ? (
+												{field.value && !imgError ? (
 													<Button
 														size="xs"
 														type="button"
@@ -140,6 +149,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 														disabled={isPending}
 														onClick={() => {
 															field.onChange(null);
+															setImgError(false);
 															if (inputRef.current) inputRef.current.value = "";
 														}}
 													>

@@ -17,8 +17,20 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'cloudinary.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
     ],
-    domains: ['cloudinary.com', 'res.cloudinary.com', 'placehold.co'],
+    domains: ['cloudinary.com', 'res.cloudinary.com', 'placehold.co', 'localhost'],
     unoptimized: true
   }
 };

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -43,6 +43,7 @@ export const EditWorkspaceForm = ({
 	const { mutate, isPending } = useUpdateWorkspace();
 	const { mutate: deleteWorkspace, isPending: deletingWorkspace } =
 		useDeleteWorkspace();
+	const [imgError, setImgError] = useState(false);
 
 	const [DeleteWorkspaceDialog, confirmDelete] = useConfirm(
 		"Расширенное рабочее пространство",
@@ -59,6 +60,17 @@ export const EditWorkspaceForm = ({
 	);
 
 	const inputRef = useRef<HTMLInputElement>(null);
+	
+	// Отладка для imageUrl
+	React.useEffect(() => {
+		console.log("Редактирование рабочего пространства, исходные данные:", {
+			id: initialValues.id || initialValues.$id,
+			name: initialValues.name,
+			imageUrl: initialValues.imageUrl,
+			hasImage: Boolean(initialValues.imageUrl),
+			imagePlaceholder: initialValues.imageUrl && initialValues.imageUrl.includes('placeholder.com')
+		});
+	}, [initialValues]);
 
 	const form = useForm<UpdateWorkspaceSchema>({
 		resolver: zodResolver(updateWorkspaceSchema),
@@ -93,6 +105,7 @@ export const EditWorkspaceForm = ({
 		const file = e.target.files?.[0];
 		if (file) {
 			form.setValue("image", file);
+			setImgError(false); // Сбрасываем флаг ошибки при новой загрузке
 		}
 	};
 
@@ -191,19 +204,18 @@ export const EditWorkspaceForm = ({
 									render={({ field }) => (
 										<div className="flex flex-col gap-y-2">
 											<div className="flex items-center gap-x-5">
-												{field.value ? (
+												{field.value && !imgError ? (
 													<div className="size-[72px] relative rounded-md overflow-hidden">
 														<Image
 															fill
 															src={
 																field.value instanceof File
 																	? URL.createObjectURL(field.value)
-																	: typeof field.value === 'string' && field.value.startsWith('/placeholder')
-																		? '/placeholder.png'
-																		: field.value
+																	: field.value
 															}
 															alt="Workspace Icon"
 															className="object-cover"
+															onError={() => setImgError(true)}
 														/>
 													</div>
 												) : (
@@ -226,7 +238,7 @@ export const EditWorkspaceForm = ({
 														onChange={handleImageChange}
 														accept=".jpg, .jpeg, .png, .svg"
 													/>
-													{field.value ? (
+													{field.value && !imgError ? (
 														<Button
 															size="xs"
 															type="button"
@@ -235,9 +247,8 @@ export const EditWorkspaceForm = ({
 															disabled={isPending}
 															onClick={() => {
 																field.onChange(null);
-																if (inputRef.current)
-																	inputRef.current.value = "";
-																console.log("Значок удален", form.getValues());
+																setImgError(false);
+																if (inputRef.current) inputRef.current.value = "";
 															}}
 														>
 															Удалить значок

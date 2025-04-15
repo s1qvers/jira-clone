@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -33,6 +33,8 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 	const router = useRouter();
 	const { mutate, isPending } = useCreateWorkspace();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [imgError, setImgError] = useState(false);
+	
 	const form = useForm<CreateWorkspaceSchema>({
 		resolver: zodResolver(createWorkspaceSchema),
 		defaultValues: {
@@ -44,6 +46,12 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 			...values,
 			image: values.image instanceof File ? values.image : "",
 		};
+		
+		console.log("Создание рабочего пространства с данными:", {
+			name: finalValues.name,
+			hasImage: Boolean(finalValues.image)
+		});
+		
 		mutate(
 			{ form: finalValues },
 			{
@@ -58,6 +66,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			form.setValue("image", file);
+			setImgError(false); // Сбрасываем флаг ошибки при новой загрузке
 		}
 	};
 
@@ -94,7 +103,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 								render={({ field }) => (
 									<div className="flex flex-col gap-y-2">
 										<div className="flex items-center gap-x-5">
-											{field.value ? (
+											{field.value && !imgError ? (
 												<div className="size-[72px] relative rounded-md overflow-hidden">
 													<Image
 														fill
@@ -105,6 +114,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 														}
 														alt="Workspace Icon"
 														className="object-cover"
+														onError={() => setImgError(true)}
 													/>
 												</div>
 											) : (
@@ -127,7 +137,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 													onChange={handleImageChange}
 													accept=".jpg, .jpeg, .png, .svg"
 												/>
-												{field.value ? (
+												{field.value && !imgError ? (
 													<Button
 														size="xs"
 														type="button"
@@ -136,6 +146,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 														disabled={isPending}
 														onClick={() => {
 															field.onChange(null);
+															setImgError(false);
 															if (inputRef.current) inputRef.current.value = "";
 														}}
 													>
