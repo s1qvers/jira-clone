@@ -31,7 +31,8 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
 
     // Генерируем уникальное имя для файла
     const randomId = Math.random().toString(36).substring(2, 15);
-    const fileName = `${randomId}-${Date.now()}.${file.name.split('.').pop()}`;
+    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_'); // Безопасное имя файла
+    const fileName = `${randomId}-${Date.now()}.${safeName.split('.').pop()}`;
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     const uploadPath = path.join(uploadDir, fileName);
     
@@ -40,13 +41,20 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
       uploadDir,
       uploadPath,
       fileSize: file.size,
-      fileType: file.type
+      fileType: file.type,
+      exists: fs.existsSync(uploadDir)
     });
     
     // Создаем директорию, если она не существует
     if (!fs.existsSync(uploadDir)) {
       console.log("Директория uploads не существует, создаем...");
-      fs.mkdirSync(uploadDir, { recursive: true });
+      try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log("Директория успешно создана:", uploadDir);
+      } catch (dirError) {
+        console.error("Ошибка при создании директории:", dirError);
+        throw new Error(`Не удалось создать директорию: ${dirError.message}`);
+      }
     }
     
     // Преобразуем File в буфер
@@ -54,11 +62,25 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
     const buffer = Buffer.from(arrayBuffer);
     
     // Сохраняем файл
-    await fs.promises.writeFile(uploadPath, buffer);
-    console.log("Файл успешно сохранен:", uploadPath);
+    try {
+      await fs.promises.writeFile(uploadPath, buffer);
+      console.log("Файл успешно сохранен:", uploadPath);
+    } catch (writeError) {
+      console.error("Ошибка при записи файла:", writeError);
+      throw new Error(`Не удалось сохранить файл: ${writeError.message}`);
+    }
     
-    // Возвращаем относительный путь к файлу
-    return `/uploads/${fileName}`;
+    // Возвращаем относительный путь к файлу (проверяем, что путь существует)
+    const relativePath = `/uploads/${fileName}`;
+    const publicPath = path.join(process.cwd(), 'public', relativePath);
+    
+    // Проверяем, что файл был успешно создан
+    if (!fs.existsSync(publicPath)) {
+      console.error("Файл не был создан по пути:", publicPath);
+      throw new Error("Файл не был создан");
+    }
+    
+    return relativePath;
   } catch (error) {
     console.error('Ошибка при загрузке изображения:', error);
     // Возвращаем плейсхолдер в случае ошибки

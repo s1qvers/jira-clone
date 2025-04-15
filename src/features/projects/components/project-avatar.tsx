@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProjectAvatarProps {
 	image?: string | null;
@@ -18,8 +18,13 @@ export const ProjectAvatar = ({
 }: ProjectAvatarProps) => {
 	const [imgError, setImgError] = useState(false);
 	
+	// Сбрасываем ошибку при изменении URL изображения
+	useEffect(() => {
+		setImgError(false);
+	}, [image]);
+	
 	// Логируем для отладки
-	console.log(`ProjectAvatar for "${name}":`, { image });
+	console.log(`ProjectAvatar for "${name}":`, { image, imgError });
 	
 	// Проверяем, что изображение действительно существует и не пустая строка
 	const hasValidImage = image && image.trim() !== "" && !imgError;
@@ -40,7 +45,7 @@ export const ProjectAvatar = ({
 				<AvatarFallback
 					className={cn("text-white bg-blue-600 rounded-md font-semibold", fallbackClassName)}
 				>
-					{name[0]}
+					{name?.[0] || "?"}
 				</AvatarFallback>
 			)}
 		</Avatar>

@@ -49,16 +49,25 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 		
 		console.log("Создание рабочего пространства с данными:", {
 			name: finalValues.name,
-			hasImage: Boolean(finalValues.image)
+			hasImage: Boolean(finalValues.image),
+			imageType: finalValues.image instanceof File ? "File" : typeof finalValues.image,
+			imageSize: finalValues.image instanceof File ? finalValues.image.size : null
 		});
 		
 		mutate(
 			{ form: finalValues },
 			{
 				onSuccess: ({ data }) => {
+					console.log("Рабочее пространство создано:", data);
 					form.reset();
-					router.push(`/workspaces/${data.$id}`);
+					// Добавляем небольшую задержку перед переходом
+					setTimeout(() => {
+						router.push(`/workspaces/${data.$id}`);
+					}, 100);
 				},
+				onError: (error) => {
+					console.error("Ошибка при создании рабочего пространства:", error);
+				}
 			}
 		);
 	};
