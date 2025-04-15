@@ -228,7 +228,7 @@ export const EditWorkspaceForm = ({
 												<div className="flex flex-col">
 													<p className="text-sm">Значок рабочей области</p>
 													<p className="text-sm text-muted-foreground">
-														JPEG, PNG, SVG, или JPEG, максимум 1 mb
+														JPEG, PNG, SVG, или JPEG, максимум 5 mb
 													</p>
 													<input
 														hidden
