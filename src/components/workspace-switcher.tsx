@@ -13,6 +13,12 @@ import { useGetWorkspaces } from "@/features/workspaces/api/use-get-workspaces";
 import { WorkspaceAvatar } from "@/features/workspaces/components/workspace-avatar";
 import { useCreateWorkspaceModal } from "@/features/workspaces/hooks/use-create-workspace-modal";
 
+// Функция для проверки валидности URL изображения
+function isValidImageUrl(url: string | null | undefined): boolean {
+	return url && url.trim() !== "" && 
+		(url.startsWith('/uploads/') || url.startsWith('/placeholder') || url.startsWith('http'));
+}
+
 export const WorkspaceSwitcher = () => {
 	const workspaceId = useWorkspaceId();
 	const router = useRouter();
@@ -29,7 +35,8 @@ export const WorkspaceSwitcher = () => {
 		name: currentWorkspace?.name,
 		imageUrl: currentWorkspace?.imageUrl,
 		imageType: typeof currentWorkspace?.imageUrl,
-		hasImage: Boolean(currentWorkspace?.imageUrl)
+		hasImage: Boolean(currentWorkspace?.imageUrl),
+		isValidImage: isValidImageUrl(currentWorkspace?.imageUrl)
 	});
 
 	const onSelect = (id: string) => {
@@ -64,7 +71,8 @@ export const WorkspaceSwitcher = () => {
 						console.log(`Workspace ${workspace.name}:`, {
 							id: workspace.id, 
 							imageUrl: workspace.imageUrl,
-							imageType: typeof workspace.imageUrl
+							imageType: typeof workspace.imageUrl,
+							isValidImage: isValidImageUrl(workspace.imageUrl)
 						});
 						
 						return (
