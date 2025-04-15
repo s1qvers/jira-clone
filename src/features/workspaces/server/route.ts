@@ -87,12 +87,18 @@ const app = new Hono()
 				imageSize: image instanceof File ? image.size : null
 			});
 			
-			// Загружаем изображение в Cloudinary, если оно есть
+			// Загружаем изображение, если оно есть
 			if (image instanceof File) {
 				try {
 					console.log("Начинаем загрузку изображения рабочего пространства");
 					uploadedImage = await uploadImage(image, 'jira_clone/workspaces');
 					console.log("Изображение успешно загружено:", uploadedImage);
+					
+					// Проверка существования загруженного файла
+					if (!uploadedImage || typeof uploadedImage !== 'string' || uploadedImage.trim() === '') {
+						console.error("Ошибка: загруженный файл не имеет валидного пути");
+						uploadedImage = "/placeholder.png";
+					}
 				} catch (error) {
 					console.error('Ошибка при загрузке изображения:', error);
 					// В случае ошибки используем локальную заглушку
@@ -104,13 +110,16 @@ const app = new Hono()
 			console.log("Рабочее пространство создано:", {
 				id: workspace.id,
 				name: workspace.name,
-				imageUrl: workspace.imageUrl
+				imageUrl: workspace.imageUrl,
+				hasValidImageUrl: workspace.imageUrl && workspace.imageUrl.trim() !== ''
 			});
 			
 			// Добавляем свойство $id для совместимости с клиентским кодом
 			const response = {
 				...workspace,
-				$id: workspace.id
+				$id: workspace.id,
+				// Убеждаемся, что imageUrl никогда не undefined
+				imageUrl: workspace.imageUrl || null
 			};
 			
 			return c.json({ data: response });
