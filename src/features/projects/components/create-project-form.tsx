@@ -103,7 +103,9 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 														src={
 															field.value instanceof File
 																? URL.createObjectURL(field.value)
-																: field.value
+																: typeof field.value === 'string' && field.value.startsWith('/placeholder')
+																	? '/placeholder.png'
+																	: field.value
 														}
 														alt="Project Icon"
 														className="object-cover"

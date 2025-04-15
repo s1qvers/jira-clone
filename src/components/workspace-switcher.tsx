@@ -18,6 +18,13 @@ export const WorkspaceSwitcher = () => {
 	const router = useRouter();
 	const { open } = useCreateWorkspaceModal();
 	const { data } = useGetWorkspaces();
+	
+	// Отладочная информация
+	console.log("WorkspaceSwitcher data:", data);
+	
+	// Получаем текущее рабочее пространство
+	const currentWorkspace = data?.documents?.find(ws => ws.id === workspaceId);
+	console.log("Current workspace:", currentWorkspace);
 
 	const onSelect = (id: string) => {
 		router.push(`/workspaces/${id}`);
@@ -33,20 +40,39 @@ export const WorkspaceSwitcher = () => {
 			</div>
 			<Select onValueChange={onSelect} value={workspaceId || undefined}>
 				<SelectTrigger className="w-full bg-neutral-200 font-medium p-1">
-					<SelectValue placeholder="Рабочее пространство не выбрано" />
-				</SelectTrigger>
-				<SelectContent>
-					{data?.documents?.map((workspace) => (
-						<SelectItem value={workspace.id} key={workspace.id}>
+					<SelectValue placeholder="Рабочее пространство не выбрано">
+						{currentWorkspace && (
 							<div className="flex justify-start items-center gap-3 font-medium">
 								<WorkspaceAvatar
-									name={workspace.name}
-									image={workspace.imageUrl || undefined}
+									name={currentWorkspace.name}
+									image={currentWorkspace.imageUrl}
 								/>
-								<span className="truncate">{workspace.name}</span>
+								<span className="truncate">{currentWorkspace.name}</span>
 							</div>
-						</SelectItem>
-					))}
+						)}
+					</SelectValue>
+				</SelectTrigger>
+				<SelectContent>
+					{data?.documents?.map((workspace) => {
+						// Отладка данных о рабочем пространстве
+						console.log(`Workspace ${workspace.name}:`, {
+							id: workspace.id, 
+							imageUrl: workspace.imageUrl,
+							imageType: typeof workspace.imageUrl
+						});
+						
+						return (
+							<SelectItem value={workspace.id} key={workspace.id}>
+								<div className="flex justify-start items-center gap-3 font-medium">
+									<WorkspaceAvatar
+										name={workspace.name}
+										image={workspace.imageUrl}
+									/>
+									<span className="truncate">{workspace.name}</span>
+								</div>
+							</SelectItem>
+						);
+					})}
 				</SelectContent>
 			</Select>
 		</div>
