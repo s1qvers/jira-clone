@@ -198,7 +198,7 @@ export const EditWorkspaceForm = ({
 															src={
 																field.value instanceof File
 																	? URL.createObjectURL(field.value)
-																	: typeof field.value === 'string' && field.value.includes('placeholder.com')
+																	: typeof field.value === 'string' && field.value.startsWith('/placeholder')
 																		? '/placeholder.png'
 																		: field.value
 															}

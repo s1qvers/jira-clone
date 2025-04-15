@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface WorkspaceAvatarProps {
-	image?: string;
+	image?: string | null;
 	name: string;
 	className?: string;
 }
@@ -13,12 +13,25 @@ export const WorkspaceAvatar = ({
 	className,
 	image,
 }: WorkspaceAvatarProps) => {
-	// Всегда используем fallback для надежности
+	// Логируем полученное изображение для отладки
+	console.log(`WorkspaceAvatar for "${name}":`, { image });
+	
 	return (
-		<Avatar className={cn("size-10 rounded-md", className)}>
-			<AvatarFallback className="text-white bg-blue-600 font-semibold text-lg uppercase rounded-md">
-				{name[0]}
-			</AvatarFallback>
+		<Avatar className={cn("size-10 rounded-md overflow-hidden", className)}>
+			{image ? (
+				<div className="h-full w-full relative">
+					<Image 
+						src={image}
+						alt={`${name} workspace icon`}
+						fill
+						className="object-cover"
+					/>
+				</div>
+			) : (
+				<AvatarFallback className="text-white bg-blue-600 font-semibold text-lg uppercase rounded-md">
+					{name[0]}
+				</AvatarFallback>
+			)}
 		</Avatar>
 	);
 };

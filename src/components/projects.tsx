@@ -28,6 +28,14 @@ export const Projects = () => {
 			{data?.documents.map((project) => {
 				const href = `/workspaces/${workspaceId}/projects/${project.$id || project.id}`;
 				const isActive = pathname === href;
+				
+				// Отладка данных о проекте
+				console.log(`Project ${project.name}:`, {
+					id: project.$id || project.id,
+					imageUrl: project.imageUrl,
+					imageType: typeof project.imageUrl
+				});
+				
 				return (
 					<Link href={href} key={project.$id || project.id}>
 						<div
