@@ -97,7 +97,14 @@ const app = new Hono()
 			}
 
 			const project = await createProject(workspaceId, name, imageUrl);
-			return c.json({ data: project });
+			
+			// Добавляем свойство $id для совместимости с клиентским кодом
+			const response = {
+				...project,
+				$id: project.id
+			};
+			
+			return c.json({ data: response });
 		}
 	)
 	.patch(
