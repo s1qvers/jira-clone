@@ -27,7 +27,18 @@ export const updateWorkspaceSchema = z.object({
 		])
 		.optional(),
 });
-export const inviteCodeSchema = z.object({ inviteCode: z.string() });
+export const inviteCodeSchema = z.object({
+	inviteCode: z.string().min(1, { message: "Код приглашения обязателен" }),
+	
+	// Для совместимости с старыми клиентами, которые могут отправлять поле 'code' вместо 'inviteCode'
+	code: z.string().optional()
+}).transform(data => {
+	// Если клиент отправил 'code' вместо 'inviteCode', используем его значение
+	if (!data.inviteCode && data.code) {
+		return { inviteCode: data.code };
+	}
+	return data;
+});
 
 export type CreateWorkspaceSchema = z.infer<typeof createWorkspaceSchema>;
 export type UpdateWorkspaceSchema = z.infer<typeof updateWorkspaceSchema>;

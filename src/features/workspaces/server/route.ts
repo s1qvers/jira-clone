@@ -204,28 +204,54 @@ const app = new Hono()
 		sessionMiddleware,
 		zValidator("json", inviteCodeSchema),
 		async (c) => {
-			const user = c.get("user");
-			const { workspaceId } = c.req.param();
-			const { inviteCode } = c.req.valid("json");
-			
-			// Проверяем существование рабочего пространства и корректность инвайт-кода
-			const workspace = await getWorkspaceById(workspaceId);
-			
-			if (!workspace || workspace.inviteCode !== inviteCode) {
-				return c.json({ error: "Неверный код приглашения" }, 400);
+			try {
+				const user = c.get("user");
+				const { workspaceId } = c.req.param();
+				const validData = c.req.valid("json");
+				const { inviteCode } = validData;
+				
+				// Логируем параметры запроса
+				console.log("Запрос на присоединение:", { 
+					workspaceId, 
+					user: user.id, 
+					validData,
+					inviteCode,
+					headers: Object.fromEntries(c.req.raw.headers.entries()) 
+				});
+				
+				// Проверяем существование рабочего пространства и корректность инвайт-кода
+				const workspace = await getWorkspaceById(workspaceId);
+				
+				console.log("Данные рабочего пространства:", {
+					exists: !!workspace,
+					inviteCodeMatch: workspace?.inviteCode === inviteCode,
+					expectedCode: workspace?.inviteCode,
+					receivedCode: inviteCode
+				});
+				
+				if (!workspace || workspace.inviteCode !== inviteCode) {
+					console.log("Ошибка: неверный код приглашения");
+					return c.json({ error: "Неверный код приглашения" }, 400);
+				}
+				
+				// Проверяем, не является ли пользователь уже участником
+				const existingMember = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
+				
+				if (existingMember) {
+					console.log("Ошибка: пользователь уже является участником");
+					return c.json({ error: "Вы уже являетесь участником" }, 400);
+				}
+				
+				// Добавляем пользователя как участника
+				await createMember(workspaceId, user.id, MemberRole.MEMBER);
+				
+				console.log("Пользователь успешно добавлен как участник");
+				
+				return c.json({ data: { $id: workspaceId } });
+			} catch (error) {
+				console.error("Ошибка при обработке запроса:", error);
+				return c.json({ error: "Внутренняя ошибка сервера" }, 500);
 			}
-			
-			// Проверяем, не является ли пользователь уже участником
-			const existingMember = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
-			
-			if (existingMember) {
-				return c.json({ error: "Вы уже являетесь участником" }, 400);
-			}
-			
-			// Добавляем пользователя как участника
-			await createMember(workspaceId, user.id, MemberRole.MEMBER);
-			
-			return c.json({ success: true });
 		}
 	)
 	.get("/:workspaceId/members", sessionMiddleware, async (c) => {
