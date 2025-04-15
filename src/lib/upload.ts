@@ -21,7 +21,7 @@ export async function uploadImage(file: File, folder = 'jira_clone'): Promise<st
   try {
     // Проверяем размер файла
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error('Файл слишком большой. Максимальный размер: 1 MB');
+      throw new Error(`Файл слишком большой. Максимальный размер: ${MAX_FILE_SIZE / (1024 * 1024)} MB`);
     }
 
     // Проверяем тип файла

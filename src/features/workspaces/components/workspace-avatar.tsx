@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface WorkspaceAvatarProps {
 	image?: string | null;
@@ -13,18 +14,24 @@ export const WorkspaceAvatar = ({
 	className,
 	image,
 }: WorkspaceAvatarProps) => {
+	const [imgError, setImgError] = useState(false);
+	
 	// Логируем полученное изображение для отладки
 	console.log(`WorkspaceAvatar for "${name}":`, { image });
 	
+	// Проверяем, что изображение действительно существует и не пустая строка
+	const hasValidImage = image && image.trim() !== "" && !imgError;
+	
 	return (
 		<Avatar className={cn("size-10 rounded-md overflow-hidden", className)}>
-			{image ? (
+			{hasValidImage ? (
 				<div className="h-full w-full relative">
 					<Image 
 						src={image}
 						alt={`${name} workspace icon`}
 						fill
 						className="object-cover"
+						onError={() => setImgError(true)}
 					/>
 				</div>
 			) : (

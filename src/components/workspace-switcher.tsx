@@ -24,7 +24,13 @@ export const WorkspaceSwitcher = () => {
 	
 	// Получаем текущее рабочее пространство
 	const currentWorkspace = data?.documents?.find(ws => ws.id === workspaceId);
-	console.log("Current workspace:", currentWorkspace);
+	console.log("Current workspace:", {
+		id: currentWorkspace?.id,
+		name: currentWorkspace?.name,
+		imageUrl: currentWorkspace?.imageUrl,
+		imageType: typeof currentWorkspace?.imageUrl,
+		hasImage: Boolean(currentWorkspace?.imageUrl)
+	});
 
 	const onSelect = (id: string) => {
 		router.push(`/workspaces/${id}`);

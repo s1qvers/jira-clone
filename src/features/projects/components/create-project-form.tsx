@@ -45,6 +45,11 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 		},
 	});
 	const onSumit = (values: CreateProjectSchema) => {
+		if (!workspaceId) {
+			console.error("workspaceId is null, cannot create project");
+			return;
+		}
+		
 		const finalValues = {
 			...values,
 			image: values.image instanceof File ? values.image : "",
@@ -58,11 +63,15 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
 		});
 		
 		mutate(
-			{ form: finalValues },
+			{ 
+				form: finalValues,
+				param: { workspaceId }
+			},
 			{
 				onSuccess: ({ data }) => {
 					form.reset();
-					router.push(`/workspaces/${workspaceId}/projects/${data.$id}`);
+					const projectId = data.$id || data.id;
+					router.push(`/workspaces/${workspaceId}/projects/${projectId}`);
 				},
 			}
 		);

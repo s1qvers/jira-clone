@@ -26,7 +26,16 @@ const app = new Hono()
 		
 		const workspaces = await getWorkspacesByUserId(user.id);
 		
-		return c.json({ data: { documents: workspaces } });
+		// Преобразовываем ответ для совместимости с клиентским кодом
+		const documents = workspaces.map(workspace => ({
+			...workspace,
+			$id: workspace.id, // Добавляем $id для совместимости
+			imageUrl: workspace.imageUrl || null // Убеждаемся, что imageUrl никогда не undefined
+		}));
+		
+		console.log("GET /workspaces - ответ:", documents);
+		
+		return c.json({ data: { documents } });
 	})
 	.get("/:workspaceId", sessionMiddleware, async (c) => {
 		const user = c.get("user");
