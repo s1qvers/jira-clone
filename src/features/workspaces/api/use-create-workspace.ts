@@ -1,66 +1,57 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
-
-import { client } from "@/lib/rpc";
 import { toast } from "sonner";
 
-type ResponseType = InferResponseType<(typeof client.api.workspaces)["$post"]>;
-type RequestType = InferRequestType<(typeof client.api.workspaces)["$post"]>;
+import { client } from "@/lib/rpc";
+import { createWorkspaceSchema } from "../schemas";
+import { z } from "zod";
+
+type RequestType = { form: z.infer<typeof createWorkspaceSchema> };
+type ResponseType = { data: any };
 
 export const useCreateWorkspace = () => {
 	const queryClient = useQueryClient();
 	const mutation = useMutation<ResponseType, Error, RequestType>({
 		mutationFn: async ({ form }) => {
-			console.log("Отправка запроса на создание рабочего пространства:", form);
+			console.log("Отправка запроса на создание рабочего пространства:", {
+				name: form.name,
+				hasImage: !!form.image,
+				imageType: form.image instanceof File ? "File" : typeof form.image
+			});
+			
 			const response = await client.api.workspaces.$post({ form });
 			
 			if (!response.ok) {
-				console.error("Ошибка при создании рабочего пространства:", 
-					response.status, response.statusText);
+				console.error("Ошибка при создании рабочего пространства:", response.status, response.statusText);
 				throw new Error("Не удалось создать рабочее пространство");
 			}
 			
 			const result = await response.json();
-			console.log("Успешный ответ от сервера при создании рабочего пространства:", result);
+			console.log("Ответ сервера на создание рабочего пространства:", result);
 			return result;
 		},
 		onSuccess: (data) => {
 			toast.success("Рабочее пространство успешно создано");
 			
-			// Принудительно очищаем кеш для рабочих пространств
-			queryClient.removeQueries({ queryKey: ["workspaces"] });
+			// Принудительно инвалидируем все кэши, связанные с рабочими пространствами
+			queryClient.invalidateQueries({ queryKey: ["workspaces"] });
 			
-			// Инвалидируем запросы и устанавливаем флаг для принудительного обновления
-			queryClient.invalidateQueries({ 
-				queryKey: ["workspaces"],
-				refetchType: 'all'
-			});
-			
-			// Принудительно устанавливаем новые данные в кеш для быстрого доступа
-			queryClient.setQueryData(["workspaces"], (oldData) => {
-				console.log("Обновляем кеш рабочих пространств:", { oldData, newWorkspace: data.data });
-				
-				// Если есть старые данные, добавляем новое рабочее пространство
-				if (oldData && typeof oldData === 'object' && 'data' in oldData) {
-					const typedOldData = oldData as { data: { documents: any[] } };
+			// Добавляем новое рабочее пространство напрямую в кэш
+			if (data?.data?.id) {
+				// Обновляем существующие кэшированные данные, добавляя новое рабочее пространство
+				queryClient.setQueryData(["workspaces"], (oldData: any) => {
+					if (!oldData) return { documents: [data.data] };
 					
-					return {
-						...typedOldData,
-						data: {
-							...typedOldData.data,
-							documents: [...(typedOldData.data.documents || []), data.data]
-						}
-					};
-				}
-				
-				// Если старых данных нет, создаем новую структуру
-				return {
-					data: {
-						documents: [data.data],
-						total: 1
+					// Если data.documents существует, добавляем новое рабочее пространство в начало списка
+					if (oldData.documents) {
+						return {
+							...oldData,
+							documents: [data.data, ...oldData.documents],
+						};
 					}
-				};
-			});
+					
+					return oldData;
+				});
+			}
 		},
 		onError: (error) => {
 			console.error("Ошибка при создании рабочего пространства:", error);

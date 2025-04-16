@@ -8,6 +8,8 @@ import { createMember, getMemberByWorkspaceAndUserId, getMembersByWorkspaceId, u
 import { createWorkspace, getWorkspaceById, getWorkspacesByUserId, updateWorkspace, deleteWorkspace } from "@/features/workspaces/service";
 import { uploadImage, getPublicIdFromUrl, deleteImage } from "@/lib/upload";
 import { prisma } from "@/lib/prisma";
+import path from "path";
+import fs from "fs";
 
 // Функция для генерации инвайт-кода
 function generateInviteCode(length: number): string {
@@ -84,7 +86,8 @@ const app = new Hono()
 				image: image instanceof File ? "File Object" : image,
 				imageType: typeof image,
 				imageInstanceofFile: image instanceof File,
-				imageSize: image instanceof File ? image.size : null
+				imageSize: image instanceof File ? image.size : null,
+				userId: user.id
 			});
 			
 			// Загружаем изображение, если оно есть
@@ -98,6 +101,17 @@ const app = new Hono()
 					if (!uploadedImage || typeof uploadedImage !== 'string' || uploadedImage.trim() === '') {
 						console.error("Ошибка: загруженный файл не имеет валидного пути");
 						uploadedImage = "/placeholder.png";
+					}
+					
+					// Дополнительная проверка наличия файла перед сохранением в базу
+					if (uploadedImage.startsWith('/uploads/')) {
+						const fullPath = path.join(process.cwd(), 'public', uploadedImage);
+						if (!fs.existsSync(fullPath)) {
+							console.error("Ошибка: загруженный файл не существует по указанному пути:", fullPath);
+							uploadedImage = "/placeholder.png";
+						} else {
+							console.log("Проверка файла успешна, файл существует:", fullPath);
+						}
 					}
 				} catch (error) {
 					console.error('Ошибка при загрузке изображения:', error);

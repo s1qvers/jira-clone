@@ -10,9 +10,9 @@ interface WorkspaceAvatarProps {
 }
 
 // Функция для проверки валидности URL изображения
-function isValidImageUrl(url: string): boolean {
-	return url && url.trim() !== "" && 
-		(url.startsWith('/uploads/') || url.startsWith('/placeholder') || url.startsWith('http'));
+function isValidImageUrl(url: string | null | undefined): boolean {
+	if (!url || typeof url !== 'string' || url.trim() === "") return false;
+	return url.startsWith('/uploads/') || url.startsWith('/placeholder') || url.startsWith('http');
 }
 
 export const WorkspaceAvatar = ({
@@ -21,21 +21,28 @@ export const WorkspaceAvatar = ({
 	image,
 }: WorkspaceAvatarProps) => {
 	const [imgError, setImgError] = useState(false);
+	const [loading, setLoading] = useState(true);
 	
 	// Сбрасываем ошибку при изменении URL изображения
 	useEffect(() => {
-		setImgError(false);
+		if (image) {
+			setImgError(false);
+			setLoading(true);
+		}
 	}, [image]);
-	
-	// Логируем полученное изображение для отладки
-	console.log(`WorkspaceAvatar for "${name}":`, { 
-		image, 
-		imgError,
-		hasValidImage: image && !imgError && isValidImageUrl(image)
-	});
 	
 	// Проверяем, что изображение действительно существует и не пустая строка
 	const hasValidImage = image && !imgError && isValidImageUrl(image);
+	
+	// Логируем полученное изображение для отладки
+	useEffect(() => {
+		console.log(`WorkspaceAvatar for "${name}":`, { 
+			image, 
+			imgError,
+			hasValidImage,
+			imageType: typeof image
+		});
+	}, [name, image, imgError, hasValidImage]);
 	
 	return (
 		<Avatar className={cn("size-10 rounded-md overflow-hidden", className)}>
@@ -45,11 +52,20 @@ export const WorkspaceAvatar = ({
 						src={image}
 						alt={`${name} workspace icon`}
 						fill
-						className="object-cover"
+						className={cn(
+							"object-cover",
+							loading && "animate-pulse bg-neutral-200"
+						)}
 						onError={(e) => {
 							console.error(`Ошибка загрузки изображения для ${name}:`, image);
 							setImgError(true);
+							setLoading(false);
 						}}
+						onLoad={() => {
+							console.log(`Изображение для ${name} успешно загружено`);
+							setLoading(false);
+						}}
+						priority={true} // Приоритетная загрузка аватара
 					/>
 				</div>
 			) : (
