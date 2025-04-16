@@ -37,6 +37,9 @@ export const useRegister = () => {
 			router.refresh();
 			toast.success("Зарегистрировано успешно!");
 			queryClient.invalidateQueries({ queryKey: ["current"] });
+			setTimeout(() => {
+				router.push('/workspaces/create');
+			}, 1000);
 		},
 		onError: (error) => {
 			toast.error(error.message || "Не удалось зарегистрироваться");
