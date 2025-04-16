@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -29,12 +29,26 @@ interface CreateWorkspaceFormProps {
 	onCancel?: () => void;
 }
 
+// Константа для хранения ID только что созданного рабочего пространства
+const CREATED_WORKSPACE_ID_KEY = "jira_clone_last_created_workspace";
+
 export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 	const router = useRouter();
 	const { mutate, isPending } = useCreateWorkspace();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [imgError, setImgError] = useState(false);
 	const [isRedirecting, setIsRedirecting] = useState(false);
+	
+	// При загрузке компонента проверяем, есть ли сохраненный ID рабочего пространства
+	useEffect(() => {
+		const lastCreatedWorkspaceId = localStorage.getItem(CREATED_WORKSPACE_ID_KEY);
+		if (lastCreatedWorkspaceId) {
+			// Если есть - удаляем его из localStorage и перенаправляем на страницу рабочего пространства
+			localStorage.removeItem(CREATED_WORKSPACE_ID_KEY);
+			console.log("Обнаружен ID последнего созданного рабочего пространства:", lastCreatedWorkspaceId);
+			router.push(`/workspaces/${lastCreatedWorkspaceId}`);
+		}
+	}, [router]);
 	
 	const form = useForm<CreateWorkspaceSchema>({
 		resolver: zodResolver(createWorkspaceSchema),
@@ -64,14 +78,16 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 					// Устанавливаем флаг редиректа
 					setIsRedirecting(true);
 					
-					console.log("Перенаправление на страницу рабочего пространства через 2 секунды");
+					// Сохраняем ID созданного рабочего пространства в localStorage
+					localStorage.setItem(CREATED_WORKSPACE_ID_KEY, data.$id || data.id);
 					
-					// Добавляем увеличенную задержку перед переходом
+					console.log("ID рабочего пространства сохранен в localStorage:", data.$id || data.id);
+					
+					// Принудительно полностью перезагружаем страницу
 					setTimeout(() => {
-						// Используем жесткий редирект с перезагрузкой страницы вместо client-side навигации
-						// Это гарантирует, что все данные будут загружены свежими
-						window.location.href = `/workspaces/${data.$id}`;
-					}, 2000);
+						console.log("Выполняем полную перезагрузку страницы...");
+						window.location.href = window.location.origin;
+					}, 1500);
 				},
 				onError: (error) => {
 					console.error("Ошибка при создании рабочего пространства:", error);
