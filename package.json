@@ -10,7 +10,11 @@
     "migrate:appwrite": "tsx scripts/migrate-from-appwrite.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force && tsx prisma/seed.ts",
+    "setup:uploads": "tsx scripts/setup-uploads.ts",
+    "setup:all": "npm run prisma:generate && npm run db:reset && npm run setup:uploads"
   },
   "dependencies": {
     "@hello-pangea/dnd": "17.0.0",

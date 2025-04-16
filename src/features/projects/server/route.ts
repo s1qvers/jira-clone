@@ -6,6 +6,32 @@ import { MemberRole } from "@/features/members/types";
 import { createProject, getProjectById, getProjectsByWorkspaceId, updateProject, deleteProject } from "@/features/projects/service";
 import { createProjectSchema, updateProjectSchema } from "../schemas";
 import { uploadImage, getPublicIdFromUrl, deleteImage } from "@/lib/upload";
+import path from "path";
+import fs from "fs";
+
+// Функция для проверки и коррекции пути к изображению
+function normalizeiImageUrl(imageUrl: string | null | undefined): string | null {
+	if (!imageUrl) return null;
+	
+	// Если это уже абсолютный URL, возвращаем как есть
+	if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+		return imageUrl;
+	}
+	
+	// Если изображение не начинается с /, добавляем /
+	if (!imageUrl.startsWith('/')) {
+		imageUrl = '/' + imageUrl;
+	}
+	
+	// Проверяем существование файла (для локальных файлов)
+	const fullPath = path.join(process.cwd(), 'public', imageUrl.replace(/^\//, ''));
+	if (!fs.existsSync(fullPath)) {
+		console.warn(`Файл изображения не найден: ${fullPath}, используем плейсхолдер`);
+		return '/placeholder.png';
+	}
+	
+	return imageUrl;
+}
 
 const app = new Hono()
 	.get("/", sessionMiddleware, async (c) => {
@@ -24,10 +50,11 @@ const app = new Hono()
 
 		const projects = await getProjectsByWorkspaceId(workspaceId);
 		
-		// Преобразуем id в $id для совместимости с фронтендом
+		// Преобразуем id в $id для совместимости с фронтендом и нормализуем пути к изображениям
 		const formattedProjects = projects.map(project => ({
 			...project,
-			$id: project.id
+			$id: project.id,
+			imageUrl: normalizeiImageUrl(project.imageUrl)
 		}));
 		
 		return c.json({
@@ -48,7 +75,14 @@ const app = new Hono()
 		}
 
 		const projects = await getProjectsByWorkspaceId(workspaceId);
-		return c.json({ data: projects });
+		
+		// Нормализуем пути к изображениям
+		const formattedProjects = projects.map(project => ({
+			...project,
+			imageUrl: normalizeiImageUrl(project.imageUrl)
+		}));
+		
+		return c.json({ data: formattedProjects });
 	})
 	.get("/:projectId", sessionMiddleware, async (c) => {
 		const { projectId } = c.req.param();
@@ -66,7 +100,14 @@ const app = new Hono()
 			return c.json({ error: "Неавторизованный" }, 401);
 		}
 
-		return c.json({ data: project });
+		// Добавляем $id для совместимости и нормализуем путь к изображению
+		const formattedProject = {
+			...project,
+			$id: project.id,
+			imageUrl: normalizeiImageUrl(project.imageUrl)
+		};
+
+		return c.json({ data: formattedProject });
 	})
 	.post(
 		"/workspaces/:workspaceId",
@@ -77,6 +118,16 @@ const app = new Hono()
 			const user = c.get("user");
 			const { name, image } = c.req.valid("form");
 
+			console.log("Создание проекта - полученные данные:", {
+				workspaceId,
+				name,
+				image: image instanceof File ? "File Object" : image,
+				imageType: typeof image,
+				imageInstanceofFile: image instanceof File,
+				imageSize: image instanceof File ? image.size : null,
+				userId: user.id
+			});
+
 			// Проверяем, что пользователь имеет доступ к рабочему пространству
 			const member = await getMemberByWorkspaceAndUserId(workspaceId, user.id);
 			if (!member) {
@@ -85,10 +136,29 @@ const app = new Hono()
 
 			let imageUrl: string | undefined;
 			
-			// Загружаем изображение в Cloudinary, если оно есть
+			// Загружаем изображение, если оно есть
 			if (image instanceof File) {
 				try {
+					console.log("Начинаем загрузку изображения для проекта");
 					imageUrl = await uploadImage(image, 'jira_clone/projects');
+					console.log("Изображение успешно загружено:", imageUrl);
+					
+					// Проверка существования загруженного файла
+					if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.trim() === '') {
+						console.error("Ошибка: загруженный файл не имеет валидного пути");
+						imageUrl = "/placeholder.png";
+					}
+					
+					// Дополнительная проверка наличия файла перед сохранением в базу
+					if (imageUrl.startsWith('/uploads/')) {
+						const fullPath = path.join(process.cwd(), 'public', imageUrl);
+						if (!fs.existsSync(fullPath)) {
+							console.error("Ошибка: загруженный файл не существует по указанному пути:", fullPath);
+							imageUrl = "/placeholder.png";
+						} else {
+							console.log("Проверка файла успешна, файл существует:", fullPath);
+						}
+					}
 				} catch (error) {
 					console.error('Ошибка при загрузке изображения:', error);
 					// Используем локальную заглушку вместо внешнего сервиса
@@ -97,11 +167,19 @@ const app = new Hono()
 			}
 
 			const project = await createProject(workspaceId, name, imageUrl);
+			console.log("Проект создан:", {
+				id: project.id,
+				name: project.name,
+				imageUrl: project.imageUrl,
+				hasValidImageUrl: project.imageUrl && project.imageUrl.trim() !== ''
+			});
 			
-			// Добавляем свойство $id для совместимости с клиентским кодом
+			// Добавляем свойство $id для совместимости с клиентским кодом и нормализуем путь к изображению
 			const response = {
 				...project,
-				$id: project.id
+				$id: project.id,
+				// Обеспечиваем, что imageUrl всегда валидный
+				imageUrl: normalizeiImageUrl(project.imageUrl)
 			};
 			
 			return c.json({ data: response });
