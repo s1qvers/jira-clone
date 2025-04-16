@@ -10,6 +10,12 @@ interface ProjectAvatarProps {
 	fallbackClassName?: string;
 }
 
+// Функция для проверки валидности URL изображения
+function isValidImageUrl(url: string | null | undefined): boolean {
+	if (!url || typeof url !== 'string' || url.trim() === "") return false;
+	return url.startsWith('/uploads/') || url.startsWith('/placeholder') || url.startsWith('http');
+}
+
 export const ProjectAvatar = ({
 	name,
 	className,
@@ -17,17 +23,28 @@ export const ProjectAvatar = ({
 	fallbackClassName,
 }: ProjectAvatarProps) => {
 	const [imgError, setImgError] = useState(false);
+	const [loading, setLoading] = useState(true);
 	
-	// Сбрасываем ошибку при изменении URL изображения
+	// Сбрасываем ошибку и статус загрузки при изменении URL изображения
 	useEffect(() => {
-		setImgError(false);
+		if (image) {
+			setImgError(false);
+			setLoading(true);
+		}
 	}, [image]);
 	
 	// Логируем для отладки
-	console.log(`ProjectAvatar for "${name}":`, { image, imgError });
+	useEffect(() => {
+		console.log(`ProjectAvatar for "${name}":`, { 
+			image, 
+			imgError, 
+			hasValidImage: image && !imgError && isValidImageUrl(image),
+			imageType: typeof image
+		});
+	}, [name, image, imgError]);
 	
 	// Проверяем, что изображение действительно существует и не пустая строка
-	const hasValidImage = image && image.trim() !== "" && !imgError;
+	const hasValidImage = image && !imgError && isValidImageUrl(image);
 	
 	return (
 		<Avatar className={cn("size-10 rounded-md overflow-hidden", className)}>
@@ -37,8 +54,20 @@ export const ProjectAvatar = ({
 						src={image} 
 						alt={`${name} project icon`}
 						fill
-						className="object-cover"
-						onError={() => setImgError(true)}
+						priority={true}
+						className={cn(
+							"object-cover",
+							loading && "animate-pulse bg-neutral-200"
+						)}
+						onError={(e) => {
+							console.error(`Ошибка загрузки изображения для проекта ${name}:`, image);
+							setImgError(true);
+							setLoading(false);
+						}}
+						onLoad={() => {
+							console.log(`Изображение для проекта ${name} успешно загружено`);
+							setLoading(false);
+						}}
 					/>
 				</div>
 			) : (
