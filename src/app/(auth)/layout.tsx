@@ -1,34 +1,29 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { PropsWithChildren } from "react";
 import Link from "next/link";
 
 const AuthLayout = ({ children }: PropsWithChildren) => {
 	const pathname = usePathname();
-	const isSignIn = pathname === "/sign-in";
+	
 	return (
-		<main className="bg-neutral-100 min-h-screen">
-			<div className="mx-auto max-w-screen-2xl p-4">
-				<nav className="flex items-center justify-between">
-					<div className="w-[60px] h-[60px] relative">
-						<Image 
-							src="/logo.png" 
-							alt="Jira Clone" 
-							priority 
-							fill
-							className="object-contain" 
-						/>
-					</div>
-
-					<Button asChild variant="secondary">
-						<Link href={isSignIn ? "/sign-up" : "/sign-in"}>
-							{isSignIn ? "Зарегистрироваться" : "Авторизоваться"}
-						</Link>
-					</Button>
+		<main className="bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800 min-h-screen flex flex-col items-center justify-center">
+			<div className="mx-auto max-w-screen-2xl p-4 w-full">
+				<nav className="flex items-center justify-center mb-8">
+					<Link href="/">
+						<div className="w-[60px] h-[60px] relative">
+							<Image 
+								src="/logo.png" 
+								alt="Jira Clone" 
+								priority 
+								fill
+								className="object-contain" 
+							/>
+						</div>
+					</Link>
 				</nav>
-				<div className="flex flex-col items-center justify-center pt-4 md:py-14">
+				<div className="flex flex-col items-center justify-center">
 					{children}
 				</div>
 			</div>

@@ -33,13 +33,33 @@ export const useRegister = () => {
 
 			return await response.json();
 		},
-		onSuccess: () => {
-			router.refresh();
-			toast.success("Зарегистрировано успешно!");
+		onSuccess: (data) => {
+			// Сначала инвалидируем запросы, чтобы гарантировать актуальность данных
 			queryClient.invalidateQueries({ queryKey: ["current"] });
+			
+			// Сообщаем пользователю об успехе
+			toast.success("Зарегистрировано успешно! Перенаправление...");
+			
+			// Обновляем UI
+			router.refresh();
+			
+			// Увеличиваем задержку перед перенаправлением
 			setTimeout(() => {
-				router.push('/workspaces/create');
-			}, 1000);
+				// Сохраняем флаг перенаправления в локальное хранилище
+				try {
+					localStorage.setItem("redirect_after_register", "true");
+				} catch (e) {
+					console.error("Ошибка при сохранении в localStorage:", e);
+				}
+				
+				// Выполняем перенаправление
+				router.push('/workspaces/create?from=registration');
+				
+				// Резервный механизм перенаправления, если router.push не сработает
+				setTimeout(() => {
+					window.location.href = '/workspaces/create?from=registration';
+				}, 500);
+			}, 2000); // Увеличиваем время до 2 секунд
 		},
 		onError: (error) => {
 			toast.error(error.message || "Не удалось зарегистрироваться");

@@ -35,6 +35,9 @@ export const useLogin = () => {
 			router.refresh();
 			toast.success("Авторизация выполнена успешно");
 			queryClient.invalidateQueries({ queryKey: ["current"] });
+			setTimeout(() => {
+				router.push('/');
+			}, 1000);
 		},
 		onError: (error) => {
 			toast.error(error.message || "Не удалось войти");

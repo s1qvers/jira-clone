@@ -119,10 +119,35 @@ export const EditWorkspaceForm = ({
 				param: { workspaceId },
 			},
 			{
-				onSuccess: () => {
+				onSuccess: async () => {
 					toast.success("Рабочее пространство успешно удалено");
-					// Перенаправление напрямую на страницу создания рабочего пространства с параметром from=delete
-					window.location.href = "/workspaces/create?from=delete";
+					
+					// Проверяем, остались ли у пользователя другие рабочие пространства
+					try {
+						const response = await fetch('/api/workspaces');
+						if (response.ok) {
+							const data = await response.json();
+							console.log("Оставшиеся рабочие пространства:", data);
+							
+							// Если рабочих пространств не осталось, перенаправляем на создание нового
+							if (data.data.documents.length === 0) {
+								console.log("Рабочих пространств не осталось, перенаправление на создание нового");
+								window.location.href = "/workspaces/create?from=delete";
+							} else {
+								// Иначе перенаправляем на первое доступное рабочее пространство
+								const nextWorkspace = data.data.documents[0];
+								console.log("Перенаправление на следующее рабочее пространство:", nextWorkspace.id || nextWorkspace.$id);
+								window.location.href = `/workspaces/${nextWorkspace.id || nextWorkspace.$id}`;
+							}
+						} else {
+							// Если произошла ошибка при получении списка, перенаправляем на главную страницу
+							console.error("Ошибка при получении списка рабочих пространств");
+							window.location.href = "/";
+						}
+					} catch (error) {
+						console.error("Ошибка при проверке оставшихся рабочих пространств:", error);
+						window.location.href = "/";
+					}
 				},
 			}
 		);

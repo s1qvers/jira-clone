@@ -1,8 +1,8 @@
 import { hc } from "hono/client";
 import { AppType } from "@/app/api/[[...route]]/route";
 
-// Используем явно указанный URL или localhost в случае, если переменная окружения не определена
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+// Используем явно указанный URL или localhost:3001 в случае, если переменная окружения не определена
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
 console.log("API базовый URL:", baseUrl);
 
 // Создаем обертку для логирования запросов

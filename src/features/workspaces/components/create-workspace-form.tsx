@@ -27,12 +27,13 @@ import { type CreateWorkspaceSchema, createWorkspaceSchema } from "../schemas";
 
 interface CreateWorkspaceFormProps {
 	onCancel?: () => void;
+	fromRegistration?: boolean;
 }
 
 // Константа для хранения ID только что созданного рабочего пространства
 const CREATED_WORKSPACE_ID_KEY = "jira_clone_last_created_workspace";
 
-export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
+export const CreateWorkspaceForm = ({ onCancel, fromRegistration = false }: CreateWorkspaceFormProps) => {
 	const router = useRouter();
 	const { mutate, isPending } = useCreateWorkspace();
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -41,13 +42,23 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 	
 	// При загрузке компонента проверяем, есть ли сохраненный ID рабочего пространства
 	useEffect(() => {
+		// Проверяем наличие флага перенаправления после регистрации
+		const redirectAfterRegister = localStorage.getItem("redirect_after_register");
+		if (redirectAfterRegister === "true") {
+			// Удаляем флаг, чтобы он не сработал повторно
+			localStorage.removeItem("redirect_after_register");
+			console.log("Страница открыта после регистрации");
+			// Не делаем дополнительных действий, просто покажем форму создания
+			return;
+		}
+		
 		// Проверяем, содержит ли URL параметр from=delete, что означает, что мы пришли сюда после удаления рабочего пространства
 		const urlParams = new URLSearchParams(window.location.search);
 		const fromDelete = urlParams.get('from') === 'delete';
 		
-		// Если мы пришли сюда после удаления рабочего пространства, не делаем перенаправление
-		if (fromDelete) {
-			console.log("Страница открыта после удаления рабочего пространства, пропускаем проверку localStorage");
+		// Если мы пришли сюда после удаления рабочего пространства или после регистрации, не делаем перенаправление
+		if (fromDelete || fromRegistration) {
+			console.log("Страница открыта после удаления рабочего пространства или регистрации, пропускаем проверку localStorage");
 			return;
 		}
 		
@@ -58,7 +69,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 			console.log("Обнаружен ID последнего созданного рабочего пространства:", lastCreatedWorkspaceId);
 			router.push(`/workspaces/${lastCreatedWorkspaceId}`);
 		}
-	}, [router]);
+	}, [router, fromRegistration]);
 	
 	const form = useForm<CreateWorkspaceSchema>({
 		resolver: zodResolver(createWorkspaceSchema),
