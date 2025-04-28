@@ -63,6 +63,12 @@ NEXTAUTH_URL=http://localhost:3005
 NEXTAUTH_SECRET=<сгенерированный_секретный_ключ>
 ```
 
+### Google OAuth (для аутентификации)
+```
+GOOGLE_CLIENT_ID=<ваш_google_client_id>
+GOOGLE_CLIENT_SECRET=<ваш_google_client_secret>
+```
+
 ## Установка и запуск
 
 1. Клонируйте репозиторий:
