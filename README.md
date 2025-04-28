@@ -63,15 +63,35 @@ npm install
 
 ### 3. Настройка переменных окружения
 
-Создайте файл `.env` на основе примера (если файла `.env.example` нет, создайте новый):
+Создайте файл `.env` со следующей структурой:
 
-```env
-# База данных
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/jira_clone?schema=public"
-
-# Основные настройки
-NEXT_PUBLIC_APP_URL=http://localhost:3005
 ```
+# ОСНОВНЫЕ НАСТРОЙКИ ПРИЛОЖЕНИЯ
+# URL приложения
+NEXT_PUBLIC_APP_URL=http://localhost:3005
+
+# База данных (PostgreSQL)
+DATABASE_URL=postgresql://пользователь:пароль@localhost:5432/jira_clone?schema=public
+
+# Настройки функциональности
+# Длина кода приглашения в рабочее пространство
+INVITECODE_LENGTH=8
+
+# Ограничения для загрузки изображений
+MAX_FILE_SIZE=4194304 # 10MB
+ACCEPTED_IMAGE_TYPES=["image/jpeg", "image/jpg", "image/png", "image/webp"]
+
+# Email
+# API ключ Resend для отправки email
+RESEND_API_KEY=ваш_ключ_resend
+
+# Аутентификация
+# NextAuth настройки
+NEXTAUTH_URL=http://localhost:3005
+NEXTAUTH_SECRET=ваш_секретный_ключ
+```
+
+> **Важно:** Не коммитьте файл `.env` в репозиторий. Он содержит чувствительную информацию и должен быть добавлен в `.gitignore`.
 
 ### 4. Настройка базы данных
 
