@@ -41,6 +41,16 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
 	
 	// При загрузке компонента проверяем, есть ли сохраненный ID рабочего пространства
 	useEffect(() => {
+		// Проверяем, содержит ли URL параметр from=delete, что означает, что мы пришли сюда после удаления рабочего пространства
+		const urlParams = new URLSearchParams(window.location.search);
+		const fromDelete = urlParams.get('from') === 'delete';
+		
+		// Если мы пришли сюда после удаления рабочего пространства, не делаем перенаправление
+		if (fromDelete) {
+			console.log("Страница открыта после удаления рабочего пространства, пропускаем проверку localStorage");
+			return;
+		}
+		
 		const lastCreatedWorkspaceId = localStorage.getItem(CREATED_WORKSPACE_ID_KEY);
 		if (lastCreatedWorkspaceId) {
 			// Если есть - удаляем его из localStorage и перенаправляем на страницу рабочего пространства

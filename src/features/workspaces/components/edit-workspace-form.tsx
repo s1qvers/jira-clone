@@ -121,8 +121,8 @@ export const EditWorkspaceForm = ({
 			{
 				onSuccess: () => {
 					toast.success("Рабочее пространство успешно удалено");
-					// Принудительное перенаправление на главную страницу
-					window.location.href = "/";
+					// Перенаправление напрямую на страницу создания рабочего пространства с параметром from=delete
+					window.location.href = "/workspaces/create?from=delete";
 				},
 			}
 		);
