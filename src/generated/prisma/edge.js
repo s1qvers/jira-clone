@@ -212,7 +212,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
+    "rootEnvPath": "../../../.env",
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
@@ -226,13 +226,13 @@ const config = {
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "fromEnvVar": null,
+        "value": "postgresql://postgres:postgres@localhost:5432/jira_clone?schema=public"
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                String      @id @default(uuid())\n  email             String      @unique\n  name              String\n  password          String\n  createdAt         DateTime    @default(now())\n  updatedAt         DateTime    @updatedAt\n  resetToken        String?\n  resetTokenExpires DateTime?\n  members           Member[]\n  tasks             Task[]      @relation(\"TaskAssignee\")\n  workspaces        Workspace[]\n}\n\nmodel Workspace {\n  id         String    @id @default(uuid())\n  name       String\n  imageUrl   String?\n  inviteCode String    @unique\n  userId     String\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  members    Member[]\n  projects   Project[]\n  tasks      Task[]\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Project {\n  id          String    @id @default(uuid())\n  name        String\n  imageUrl    String?\n  workspaceId String\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n  tasks       Task[]\n}\n\nmodel Task {\n  id          String     @id @default(uuid())\n  name        String\n  status      TaskStatus\n  assigneeId  String\n  workspaceId String\n  projectId   String\n  position    Int\n  dueDate     DateTime?\n  description String?\n  createdAt   DateTime   @default(now())\n  updatedAt   DateTime   @updatedAt\n  assignee    User       @relation(\"TaskAssignee\", fields: [assigneeId], references: [id], onDelete: Cascade)\n  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n}\n\nmodel Member {\n  id          String     @id @default(uuid())\n  workspaceId String\n  userId      String\n  role        MemberRole\n  createdAt   DateTime   @default(now())\n  updatedAt   DateTime   @updatedAt\n  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n\n  @@unique([workspaceId, userId])\n}\n\nenum TaskStatus {\n  BACKLOG\n  TODO\n  IN_PROGRESS\n  IN_REVIEW\n  DONE\n}\n\nenum MemberRole {\n  ADMIN\n  MEMBER\n}\n",
-  "inlineSchemaHash": "b8585043ed278c985415f30250651a7e7fa62440012b3f4050ccb48be78cfae3",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = \"postgresql://postgres:postgres@localhost:5432/jira_clone?schema=public\"\n}\n\nmodel User {\n  id                String      @id @default(uuid())\n  email             String      @unique\n  name              String\n  password          String\n  createdAt         DateTime    @default(now())\n  updatedAt         DateTime    @updatedAt\n  resetToken        String?\n  resetTokenExpires DateTime?\n  members           Member[]\n  tasks             Task[]      @relation(\"TaskAssignee\")\n  workspaces        Workspace[]\n}\n\nmodel Workspace {\n  id         String    @id @default(uuid())\n  name       String\n  imageUrl   String?\n  inviteCode String    @unique\n  userId     String\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  members    Member[]\n  projects   Project[]\n  tasks      Task[]\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Project {\n  id          String    @id @default(uuid())\n  name        String\n  imageUrl    String?\n  workspaceId String\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n  tasks       Task[]\n}\n\nmodel Task {\n  id          String     @id @default(uuid())\n  name        String\n  status      TaskStatus\n  assigneeId  String\n  workspaceId String\n  projectId   String\n  position    Int\n  dueDate     DateTime?\n  description String?\n  createdAt   DateTime   @default(now())\n  updatedAt   DateTime   @updatedAt\n  assignee    User       @relation(\"TaskAssignee\", fields: [assigneeId], references: [id], onDelete: Cascade)\n  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n}\n\nmodel Member {\n  id          String     @id @default(uuid())\n  workspaceId String\n  userId      String\n  role        MemberRole\n  createdAt   DateTime   @default(now())\n  updatedAt   DateTime   @updatedAt\n  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)\n\n  @@unique([workspaceId, userId])\n}\n\nenum TaskStatus {\n  BACKLOG\n  TODO\n  IN_PROGRESS\n  IN_REVIEW\n  DONE\n}\n\nenum MemberRole {\n  ADMIN\n  MEMBER\n}\n",
+  "inlineSchemaHash": "b4cccbe76db7bc8b894deb8a91018d2b7dd9507516714dcc37a5afe471ef404b",
   "copyEngine": true
 }
 config.dirname = '/'
@@ -243,9 +243,7 @@ config.engineWasm = undefined
 config.compilerWasm = undefined
 
 config.injectableEdgeEnv = () => ({
-  parsed: {
-    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
-  }
+  parsed: {}
 })
 
 if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
