@@ -90,7 +90,7 @@ const app = new Hono()
 			}
 			
 			// Создаем URL для сброса пароля с явным указанием baseUrl
-			const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
+			const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005';
 			const resetUrl = `${appUrl}/reset-password?token=${resetToken}`;
 			console.log("Сформирован URL для сброса пароля:", resetUrl);
 			
